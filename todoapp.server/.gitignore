@@ -5,3 +5,13 @@ npm-debug.log
 selenium-debug.log
 test/unit/coverage
 test/e2e/reports
+
+static/app.*
+staticfiles
+
+.tern-port
+
+/.venv
+
+db.sqlite3
+__pycache__
