@@ -1,0 +1,27 @@
+<template>
+  <div id="todo-list">
+    <ul>
+      <todo v-for="todo in todos"
+            v-bind:todo="todo"
+            v-bind:key="todo.id">
+      </todo>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+ import Todo from './Todo.vue'
+
+ export default {
+   name: 'todo-list',
+   components: {
+     Todo
+   },
+   computed: {
+     todos () {
+       return this.$store.state.todos
+     }
+   }
+ }
+</script>
