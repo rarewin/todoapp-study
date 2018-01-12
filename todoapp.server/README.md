@@ -1,6 +1,6 @@
 # todoapp.server
 
-> ToDoApp Server App
+> ToDoApp Server
 
 ## Build Setup
 
@@ -13,6 +13,9 @@ npm run dev
 
 # build for production with minification
 npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
 
 # run unit tests
 npm run unit
@@ -27,4 +30,4 @@ npm test
 .deploy.sh
 ```
 
-For detailed explanation on how things work, checkout the [guide](https://github.com/vuejs-templates/webpack#vue-webpack-boilerplate) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
