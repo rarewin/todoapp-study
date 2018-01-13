@@ -7,7 +7,7 @@
           <b-input id="inputTodo"
                    v-model="newTodoText"
                    type="text"
-                   @keydown="createTodo"
+                   @keydown.enter="createTodo"
                    required
                    placeholder="TODO Description">
           </b-input>
