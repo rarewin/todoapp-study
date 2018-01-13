@@ -5,7 +5,6 @@
             v-bind:todo="todo"
             v-bind:key="todo.id">
       </todo>
-      </li>
     </ul>
   </div>
 </template>
