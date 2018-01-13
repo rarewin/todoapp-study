@@ -1,23 +1,47 @@
 <template>
   <div id="user-inputs">
-    <input v-model="newTodoText"
-           v-on:keydown.enter="createTodo">
-    <datepicker v-model="newTodoDeadline"
-                :clear-button="true">
-    </datepicker>
-    <div>
-      <input type="radio" id="1" value="1" v-model="newTodoPriority">
-      <label for="1">1</label>
-      <input type="radio" id="2" value="2" v-model="newTodoPriority">
-      <label for="2">2</label>
-      <input type="radio" id="3" value="3" v-model="newTodoPriority">
-      <label for="3">3</label>
-      <input type="radio" id="4" value="4" v-model="newTodoPriority">
-      <label for="4">4</label>
-      <input type="radio" id="5" value="5" v-model="newTodoPriority">
-      <label for="5">5</label>
-    </div>
-    <textarea v-model="newTodoMemo"></textarea>
+    <b-form inline @submit="createTodo">
+      <b-row id="rowTodo">
+        <b-col sm="4">
+          <label class="sr-only" for="inputTodo">TODO</label>
+          <b-input id="inputTodo"
+                   v-model="newTodoText"
+                   type="text"
+                   @keydown="createTodo"
+                   required
+                   placeholder="TODO Description">
+          </b-input>
+        </b-col>
+        <b-col sm="2">
+          <label class="sr-only" for="datepickerDeadline">Deadline</label>
+          <datepicker v-model="newTodoDeadline"
+                      id="datepickerDeadline"
+                      placeholder="Deadline"
+                      :clear-button="true">
+          </datepicker>
+        </b-col>
+        <b-col sm="1">
+          <label class="sr-only" for="selectPriority">Priority</label>
+          <b-form-select id="selectPriority"
+                         v-model="newTodoPriority"
+                         :options="priorities">
+            <option slot="first" :value="null">Priority</option>
+          </b-form-select>
+        </b-col>
+        <b-col sm="4">
+          <label class="sr-only" for="textTodoMemo">Memo</label>
+          <b-form-textarea id="textTodoMemo"
+                           style="width: 100%"
+                           v-model="newTodoMemo"
+                           placeholder="Memo for TODO"
+                           :no-resize="true" :max-rows="1">
+          </b-form-textarea>
+        </b-col>
+        <b-col sm="1">
+          <b-button type="submit" variant="primary">Create</b-button>
+        </b-col>
+      </b-row>
+    </b-form>
   </div>
 </template>
 
@@ -32,7 +56,8 @@
        newTodoText: '',
        newTodoDeadline: null,
        newTodoPriority: null,
-       newTodoMemo: ''
+       newTodoMemo: '',
+       priorities: {'1': '1 (High)', '2': '2', '3': '3', '4': '4', '5': '5 (Low)'}
      }
    },
    methods: {
@@ -60,3 +85,18 @@
    }
  }
 </script>
+
+<style>
+ div#rowTodo {
+   background: black;
+ }
+
+ .vdp-datepicker input,
+ input#inputTodo,
+ select#selectPriority,
+ input#textTodoMemo {
+   width: 100%;
+   height: 100%;
+   margin: 0 0 0 0;
+ }
+</style>
