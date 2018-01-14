@@ -9,13 +9,8 @@
 </template>
 
 <script>
- import Todo from './Todo.vue'
-
  export default {
    name: 'todo-list',
-   components: {
-     Todo
-   },
    computed: {
      todos () {
        return this.$store.state.todos
