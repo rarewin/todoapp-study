@@ -7,7 +7,7 @@ python format_index_html.py
 echo 'Done...'
 
 echo 'Install python modules'
-pip install -r requirements.txt
+pipenv install
 echo 'Done...'
 
 echo 'Collect static'
