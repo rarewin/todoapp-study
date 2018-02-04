@@ -161,6 +161,96 @@ REST_FRAMEWORK = {
 {"detail":"Invalid token."}%
 ```
 
+## Vueのコードでセッション認証を使うようにする
+
+さて、アクセス制限するようにしたのはよいのですが、今度はVueのフロントエンドからDjango上のデータにアクセスできなくなってしまいました。  
+ここでVueのコードにトークンを埋めたら、結局アクセスし放題と変わりないので、Djangoのセッション管理機能をそのまま使います。
+
+てっとり早く、差分は以下になります。  
+ちょっと正確なことは追ってないのですが、 `MIDDLEWARE_CLASSES` という定義は古いようで、
+最近のDjangoだと `MIDDLEWARE` としないと色々と動かないようです?  
+あと、 `DEFAULT_AUTHENTICATION_CLASSES` に `rest_framework.authentication.SessionAuthentication` を追加してるのがミソかと思います。
+
+
+``` diff
+diff --git a/todoapp.server/vuedj/settings.py b/todoapp.server/vuedj/settings.py
+index 3c9973a..93d8363 100644
+--- a/todoapp.server/vuedj/settings.py
++++ b/todoapp.server/vuedj/settings.py
+@@ -45,13 +45,12 @@ INSTALLED_APPS = [
+     'app',
+ ]
+ 
+-MIDDLEWARE_CLASSES = [
++MIDDLEWARE = [
+     'django.middleware.security.SecurityMiddleware',
+     'django.contrib.sessions.middleware.SessionMiddleware',
+     'django.middleware.common.CommonMiddleware',
+     'django.middleware.csrf.CsrfViewMiddleware',
+     'django.contrib.auth.middleware.AuthenticationMiddleware',
+-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+     'django.contrib.messages.middleware.MessageMiddleware',
+     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+ ]
+@@ -148,5 +147,6 @@ REST_FRAMEWORK = {
+     ],
+     'DEFAULT_AUTHENTICATION_CLASSES': [
+         'rest_framework.authentication.TokenAuthentication',
++        'rest_framework.authentication.SessionAuthentication',
+     ],
+ }
+diff --git a/todoapp.server/vuedj/urls.py b/todoapp.server/vuedj/urls.py
+index e1b2384..cc07fec 100644
+--- a/todoapp.server/vuedj/urls.py
++++ b/todoapp.server/vuedj/urls.py
+@@ -13,16 +13,21 @@ Including another URLconf
+     1. Import the include() function: from django.conf.urls import url, include
+     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+ """
+-from django.conf.urls import url, include
++from django.conf.urls import (
++    url,
++    include
++)
++from django.contrib import admin
++from django.urls import path
+ 
+ from rest_framework import routers
+-
+ from app import views
+ 
+ router = routers.SimpleRouter()
+ router.register(r'todos', views.TodoViewSet)
+ 
+ urlpatterns = [
++    path('admin/', admin.site.urls),
+     url(r'^$', views.index, name='home'),
+-    url(r'^', include(router.urls))
++    url(r'^', include(router.urls)),
+ ]
+```
+
+なんにせよ、上記の変更で http://localhost:8000/admin/ にアクセスするとログイン画面が表示されるようになり、
+トークン作る際に作成した管理ユーザでログインすると、無事にVueで書いたフロントエンドからデータをさわれるようになり…… __ませんでした__。  
+
+どうやら、一覧表示のGETはうまくいくのですが、POSTのときだけ失敗しています。  
+ブラウザのデバッガを見てると、以下のようなエラーが出ていました。
+
+```
+{…}
+body: {…}
+detail: "CSRF Failed: CSRF token missing or incorrect."
+__proto__: Object { … }
+bodyText: "{\"detail\":\"CSRF Failed: CSRF token missing or incorrect.\"}"
+headers: {…}
+map: {…}
+```
+
+[StackOverflowのこの記事][[CSRF Failed: CSRF token missing or incorrect]}を見てみると、
+セッション認証を使う場合はCSRFトークンを付けろとありました。  
+
+
+
 
 ## herokuデプロイ用のDjangoの設定をする
 
@@ -175,3 +265,4 @@ REST_FRAMEWORK = {
 [DebianPkgResources]:https://github.com/pypa/pip/issues/4668
 [TokenAuthentication]:http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
 [Django Rest Framework Token Authentication @ Stack Overflow]:https://stackoverflow.com/questions/14838128/django-rest-framework-token-authentication
+[CSRF Failed: CSRF token missing or incorrect]:https://stackoverflow.com/questions/26639169/csrf-failed-csrf-token-missing-or-incorrect
