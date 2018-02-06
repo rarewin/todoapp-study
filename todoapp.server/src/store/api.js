@@ -1,27 +1,39 @@
-import Vue from 'vue'
-import VueResource from 'vue-resource'
+// import Vue from 'vue'
+import Axios from 'axios'
+import Cookies from 'js-cookie'
 
-Vue.use(VueResource)
+const csrfToken = Cookies.get('csrftoken')
+const requestHeader = {
+  headers: {
+    'X-CSRFToken': csrfToken
+  }
+}
+const requestHeaderWithNullData = {
+  headers: {
+    'X-CSRFToken': csrfToken
+  },
+  data: {}
+}
 
 export default {
   get (url, request) {
-    return Vue.http.get(url, request)
-              .then((response) => Promise.resolve(response))
-              .catch((error) => Promise.reject(error))
+    return Axios.get(url, request)
+                .then((response) => Promise.resolve(response))
+                .catch((error) => Promise.reject(error))
   },
   post (url, request) {
-    return Vue.http.post(url, request)
-              .then((response) => Promise.resolve(response))
-              .catch((error) => Promise.reject(error))
+    return Axios.post(url, request, requestHeader)
+                .then((response) => Promise.resolve(response))
+                .catch((error) => Promise.reject(error))
   },
   patch (url, request) {
-    return Vue.http.patch(url, request)
-              .then((response) => Promise.resolve(response))
-              .catch((error) => Promise.reject(error))
+    return Axios.patch(url, request, requestHeader)
+                .then((response) => Promise.resolve(response))
+                .catch((error) => Promise.reject(error))
   },
-  delete (url, request) {
-    return Vue.http.delete(url, request)
-              .then((response) => Promise.resolve(response))
-              .catch((error) => Promise.reject(error))
+  delete (url) {
+    return Axios.delete(url, requestHeaderWithNullData)
+                .then((response) => Promise.resolve(response))
+                .catch((error) => Promise.reject(error))
   }
 }

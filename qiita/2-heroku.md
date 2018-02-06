@@ -248,6 +248,19 @@ map: {…}
 
 [StackOverflowのこの記事][[CSRF Failed: CSRF token missing or incorrect]}を見てみると、
 セッション認証を使う場合はCSRFトークンを付けろとありました。  
+[StackOverflowからのリンクの張られているDjangoのページでも](https://docs.djangoproject.com/en/dev/ref/csrf/#ajax) AjaxでPOSTリクエストをする場合は、
+CSRFトークンをクッキーから取得して渡せとありました。  
+JavaScript Cookie libraryを使えば楽勝だとも書いてあるので、今回はそちらに従います。  
+ということで、ひとまず npm コマンドでライブラリを入れます。
+
+
+``` shellsession
+% npm install --save js-cookie
+```
+
+続けて、以下の差分でPOSTのリクエストのヘッダに `X-CSRFToken` を付けてあげます。
+
+
 
 
 

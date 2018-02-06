@@ -3,18 +3,18 @@ import Vuex from 'vuex'
 import api from './api.js'
 
 Vue.use(Vuex)
-const apiRoot = 'http://localhost:8000'
 
+const apiRoot = 'http://localhost:8000'
 const store = new Vuex.Store({
   state: {
     todos: []
   },
   mutations: {
     'GET_TODOS': function (state, response) {
-      state.todos = response.body
+      state.todos = response.data
     },
     'ADD_TODO': function (state, response) {
-      state.todos.push(response.body)
+      state.todos.push(response.data)
     },
     'CLEAR_TODOS': function (state) {
       const todos = state.todos
