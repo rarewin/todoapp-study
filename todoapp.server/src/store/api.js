@@ -1,4 +1,3 @@
-// import Vue from 'vue'
 import Axios from 'axios'
 import Cookies from 'js-cookie'
 
