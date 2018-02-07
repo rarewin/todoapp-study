@@ -403,6 +403,25 @@ index 93d8363..b16c5ea 100644
 +django_heroku.settings(locals())
 ```
 
+つづいて、Procfileの方ですが、herokuでDjangoを動かすさいには [Gunicorn][] というWSGIのモジュールを使うのが一般的みたいです。
+ということで、まずは入れましょう。
+
+```shellsession
+% pipenv install gunicorn
+```
+
+そして、heroku用のProcfileは以下のようになりました。
+
+```Procfile
+web: gunicorn vuedj.wsgi --log-file -
+```
+
+さて、ここまできて git にはAndroidアプリと共存したようなリポジトリを作成してしまった事に気付きました。
+サブディレクトリだけherokuにデプロイとかできないのかなぁ、とか考えてたら、 [みんな大好きStack Overflow][How can I deploy/push only a subdirectory of my git repo to Heroku?] にて回答がありました。
+以下のようにすればいけるようです。
+
+
+
 
 ## 参考にさせていただいたもの
 
@@ -423,3 +442,4 @@ index 93d8363..b16c5ea 100644
 [Can't set headers for DELETE method]:https://github.com/axios/axios/issues/509
 [django-heroku]:https://github.com/heroku/django-heroku
 [How can I deploy/push only a subdirectory of my git repo to Heroku?]:https://stackoverflow.com/questions/7539382/how-can-i-deploy-push-only-a-subdirectory-of-my-git-repo-to-heroku
+[Gunicorn]:http://gunicorn.org/
