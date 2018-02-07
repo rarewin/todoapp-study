@@ -468,13 +468,52 @@ Run git push heroku master to create a new release using these buildpacks.
 Setting NPM_CONFIG_PRODUCTION and restarting ⬢ xxxxx-xxxxx-00000... done, v3
 NPM_CONFIG_PRODUCTION: false
 % git subtree push --prefix todoapp.server heroku master
-
+git push using:  heroku master
+Counting objects: 3, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 314 bytes | 314.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0)
 
 ... snip ...
 
-
-
-
+remote: -----> Launching...
+remote:        Released v7
+remote:        https://xxxxx-xxxxx-00000.herokuapp.com/ deployed to Heroku
+remote:
+remote: Verifying deploy... done.
+To https://git.heroku.com/xxxxx-xxxxx-00000.git
+   cc2cec0..2f6aa7f  2f6aa7f8e28661c7e3c1ee003785c18fc7f4304a -> master
+% heroku run python manage.py migrate
+Running python manage.py migrate on ⬢ xxxxx-xxxxx-00000... up, run.9898 (Free)
+Operations to perform:
+  Apply all migrations: admin, app, auth, authtoken, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying app.0001_initial... OK
+  Applying app.0002_auto_20180112_1451... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
+  Applying sessions.0001_initial... OK
+% heroku run python manage.py createsuperuser
+Running python manage.py createsuperuser on ⬢ xxxxx-xxxxx-00000... up, run.6738 (Free)
+Username (leave blank to use 'u38481'): xxxx
+Email address: xxxx@xxxxx.xxx
+Password:
+Password (again):
+Superuser created successfully.
 ```
 
 

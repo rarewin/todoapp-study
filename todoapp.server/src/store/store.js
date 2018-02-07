@@ -4,7 +4,7 @@ import api from './api.js'
 
 Vue.use(Vuex)
 
-const apiRoot = 'http://localhost:8000'
+const apiRoot = 'http://localhost:' + (process.env.PORT || 8000)
 const store = new Vuex.Store({
   state: {
     todos: []
