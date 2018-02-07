@@ -388,10 +388,10 @@ index 93d8363..b16c5ea 100644
 +++ b/todoapp.server/vuedj/settings.py
 @@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
  """
- 
+
  import os
 +import django_heroku
- 
+
  # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 @@ -150,3 +151,6 @@ REST_FRAMEWORK = {
@@ -418,9 +418,64 @@ web: gunicorn vuedj.wsgi --log-file -
 
 さて、ここまできて git にはAndroidアプリと共存したようなリポジトリを作成してしまった事に気付きました。
 サブディレクトリだけherokuにデプロイとかできないのかなぁ、とか考えてたら、 [みんな大好きStack Overflow][How can I deploy/push only a subdirectory of my git repo to Heroku?] にて回答がありました。
-以下のようにすればいけるようです。
+git-subtreeをつかえばいけるようです。
+また、今回の環境では PythonとNode.js の二つが必要になるので、
+ということで、 [Herokuのマニュアル][Using Multiple Buildpacks for an App] に従って以下のようにNode.js→Pythonと設定できるようにしてあげました。
+
+さらに、 `npm install` で `devDependencies` もインストールしてほしかったので、 `NPM_CONFIG_PRODUCTION` の値をfalseにしていたり、
+さらにその後に `npm run dev` をしてほしかったので、以下の差分も追加してます。
+
+```patch
+diff --git a/todoapp.server/package.json b/todoapp.server/package.json
+index 8d8bea2..931ddd0 100644
+--- a/todoapp.server/package.json
++++ b/todoapp.server/package.json
+@@ -12,7 +12,7 @@
+     "test": "npm run unit && npm run e2e",
+     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
+     "build": "node build/build.js",
+-    "postinstall": "node build/build.js"
++    "heroku-postbuild": "node build/build.js"
+   },
+   "dependencies": {
+     "axios": "^0.17.1",
+```
+
+ということで、ずらっと並べると以下のようなコマンドでデプロイしました。
+なお、コマンド叩く際のカレントディレクトリが悪かったからなのか、うまいことremote登録してくれなかったので、herokuコマンドを余分に叩いてます。
+(herokuコマンドの部分は一部伏せ字にしてます)。
 
 
+```shellsession
+% heroku login
+Enter your Heroku credentials:
+Email: xxxx@xxxxx.xxx
+Password: **********
+Two-factor code: ******
+Logged in as rare@tirasweel.org
+(todoapp.server-QYHaGtXw) rare@ambisch% heroku create
+Creating app... done, ⬢ xxxxx-xxxxx-00000
+https://xxxxx-xxxxx-00000.herokuapp.com/ | https://git.heroku.com/xxxxx-xxxxx-00000.git
+% heroku buildpacks:set heroku/python
+Buildpack set. Next release on xxxxx-xxxxx-00000 will use heroku/python.
+Run git push heroku master to create a new release using this buildpack.
+% heroku buildpacks:add --index 1 heroku/nodejs
+Buildpack added. Next release on xxxxx-xxxxx-00000 will use:
+  1. heroku/nodejs
+  2. heroku/python
+Run git push heroku master to create a new release using these buildpacks.
+% heroku config:set NPM_CONFIG_PRODUCTION=false
+Setting NPM_CONFIG_PRODUCTION and restarting ⬢ xxxxx-xxxxx-00000... done, v3
+NPM_CONFIG_PRODUCTION: false
+% git subtree push --prefix todoapp.server heroku master
+
+
+... snip ...
+
+
+
+
+```
 
 
 ## 参考にさせていただいたもの
@@ -443,3 +498,4 @@ web: gunicorn vuedj.wsgi --log-file -
 [django-heroku]:https://github.com/heroku/django-heroku
 [How can I deploy/push only a subdirectory of my git repo to Heroku?]:https://stackoverflow.com/questions/7539382/how-can-i-deploy-push-only-a-subdirectory-of-my-git-repo-to-heroku
 [Gunicorn]:http://gunicorn.org/
+[Using Multiple Buildpacks for an App]:https://devcenter.heroku.com/articles/using-multiple-buildpacks-for-an-app

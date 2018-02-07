@@ -1,1 +1,1 @@
-web: npm run build && gunicorn vuedj.wsgi --log-file -
+web: npm gunicorn vuedj.wsgi --log-file -

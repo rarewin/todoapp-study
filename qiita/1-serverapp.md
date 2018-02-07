@@ -36,7 +36,7 @@ Androidのアプリを書いてみようかと思うのですが、それなり�
 ? Project name todoapp.server
 ? Project version 0.1.0
 ? Project description ToDoApp Server App
-? Author Katsuki Kobayashi <rare@tirasweel.org>
+? Author Katsuki Kobayashi <xxxx@xxxxx.xxx>
 ? private Yes
 
    vue-cli · Generated "todoapp.server".
