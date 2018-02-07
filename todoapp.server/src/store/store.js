@@ -4,7 +4,8 @@ import api from './api.js'
 
 Vue.use(Vuex)
 
-const apiRoot = 'http://localhost:' + (process.env.PORT || 8000)
+const hostname = process.env.HEROKU_APP_NAME ? process.env.HEROKU_APP_NAME + '.herokuapp.com' : 'localhost'
+const apiRoot = 'http://' + hostname + ':' + (process.env.PORT || 8000)
 const store = new Vuex.Store({
   state: {
     todos: []
