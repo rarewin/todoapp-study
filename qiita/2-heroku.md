@@ -2,7 +2,7 @@
 
 ## はじめに
 
-**注意** : ここは作業メモ、大した情報は無いですょ。あと、Androidは今回も出てきません。
+**注意** : ここは作業メモ、大した情報は無いですょ。あと、 **Androidは今回も出てきません。**
 
 Androidのアプリを書いてみようかと思うのですが、それなりのことをやろうとするとどうしてもサーバー側もなんとかしないと便利なものが作れない気がしてます。
 ということで、この記事では(私が飽きたり挫折したりしなければ)、簡単なTODOアプリを作ることを目標として、
@@ -19,15 +19,18 @@ Androidのアプリを書いてみようかと思うのですが、それなり�
 
 今回のパートでは、Androidアプリ……を作る前に、Androidアプリからjsonでデータを取得できるように、
 [前回](https://qiita.com/rarewin/items/c6a70689844eafe8c3a1) 作成したVue+Djangoなwebアプリをherokuにデプロイしたいかと思います。
-その際、自由にアクセスされては困るので、APIキーを使って認証できるようにもしたいと思ってます。
+その際、自由にアクセスされては困るので、APIキーを使って認証できるようにします。
+
+### 過去の記事
+
+- [Vue.js + Django REST Framework + Android でTODOアプリを書いてみるテスト Part 1/?](https://qiita.com/rarewin/items/c6a70689844eafe8c3a1)
 
 ## pip+venvからpipenvに乗り換える
 
-まずは [前回](https://qiita.com/rarewin/items/c6a70689844eafe8c3a1) の環境から進めていきます。
-前回の環境では pip と venv を使ったのですが、どうやら heroku では、それらをまとめたような便利ツール pipenv がサポートされてるようです。
-ということで、さっそくそこの乗り換え作業から行きます。
+[前回の環境](https://qiita.com/rarewin/items/c6a70689844eafe8c3a1)では pip と venv を使ったのですが、どうやら heroku では、それらをまとめたような便利ツール [pipenv][Pipenv] がサポートされてるようです。
+SoftwareDesignの2018年2月号でも「今後周流のパッケージングツールになると期待」と紹介されていたので、あまり深く考えずに、さっそく乗り換え作業から行きます。
 
-で、私の環境は Debian/sid なんですが、どうやらDebianのPythonまわりには `pip freeze` で不要な行を出す問題があるようです。 [参考サイト][DebianPkgResources]
+ところで、私の環境は Debian/sid なんですが、どうやらDebianのPythonまわりには `pip freeze` で不要な行を出す問題があるようです。 > [参考サイト][DebianPkgResources]
 これのせいでpipenvのインストール時に問題が発生したので、まずはrequirements.txtから以下の行を削除しておきます。
 
 ```
@@ -101,16 +104,18 @@ index 42a3e0f..828098a 100644
 今回は、チュートリアルの環境に組み込まれている Django REST frameworkにある機能をそのまま使わせてもらいます。
 マニュアルは [こちら][TokenAuthentication] に。
 
-まずは、settings.pyの INSTALLED_APPS に以下の行を追加します。 (snip snipはチョキチョキの意味)
+まずは、settings.pyの INSTALLED_APPS に以下の行を追加します。 (snip snipはチョキチョキの意味なので打ち込まないようお願いします。)
 
 ```python:vuedj/settings.py
 INSTALLED_APPS = [
+
 ... snip snip ...
-    'rest_framework.authtoken',
+
+'rest_framework.authtoken',
 ]
 ```
 
-その後、おもむろに `./manage.py migrate` を実行しましょう。
+その後、 `pipenv shell` してる状態でおもむろに `./manage.py migrate` を実行しましょう。
 
 ```shellsession
 % ./manage.py migrate
@@ -252,9 +257,8 @@ CSRFトークンをクッキーから取得して渡せとありました。
 JavaScript Cookie libraryを使えば楽勝だとも書いてあるので、今回はそちらに従います。
 ということで、ひとまず npm コマンドでライブラリを入れます。
 
-で、POSTのリクエストのヘッダに `X-CSRFToken` を付けて……とやっていたら、
-なんと、[vue-resourceは引退しているらしい][vue-resource の引退について] ということがわかりました。
-この世界は色々とはやい……。こわい……。
+で、POSTのリクエストのヘッダに `X-CSRFToken` を付けて……とやっていたら、なんと、[vue-resourceは引退しているらしい][vue-resource の引退について] ということがわかりました。
+なにそれこわい……。この世界は色々とはやい……。
 ということで、ついでに、代わりの [axios][axios] に乗り換えておきます。
 そしてさようなら、vue-resourceくん……。
 
@@ -359,21 +363,20 @@ export default {
 注意点として2点ありました。
 
 - `vue-resource` では `body` というメンバだったのが、 `axios` では `data` になっている
-- DELETEする場合、第二引数にあたえる辞書に `data` がないと `headers` が見向きもされない  [参考][Can't set headers for DELETE method]
+- DELETEする場合、第二引数にあたえる辞書に `data` がないとおかしなことになるそうです…… >  [参考][Can't set headers for DELETE method]
 
 とくに後者は罠でした……。
 
 ## herokuデプロイ用のDjangoの設定をする
 
-というわけで、ようやく本題です。
+というわけで、ようやくherokuにデプロイするところまで辿りつきました。
 Djangoのプロジェクトをherokuにデプロイするてっとり早い方法の手順としては、
 
 - [django-heroku][] を使う
 - Procfileをつくる
 
 な感じです。
-ということで、まずは [django-heroku][] を入れます。これはデータベースや、シークレットキーや、アクセス可能なホストやらの設定を
-heroku的にいい感じに書き換えてくれるものです。
+ということで、まずは [django-heroku][] を入れます。これはデータベースや、シークレットキーや、アクセス可能なホストやらの設定をheroku的にいい感じに書き換えてくれるものです。
 
 ```shellsession
 % pipenv install django-heroku
@@ -416,35 +419,15 @@ index 93d8363..b16c5ea 100644
 web: gunicorn vuedj.wsgi --log-file -
 ```
 
-さて、ここまできて git にはAndroidアプリと共存したようなリポジトリを作成してしまった事に気付きました。
-サブディレクトリだけherokuにデプロイとかできないのかなぁ、とか考えてたら、 [みんな大好きStack Overflow][How can I deploy/push only a subdirectory of my git repo to Heroku?] にて回答がありました。
-git-subtreeをつかえばいけるようです。
-また、今回の環境では PythonとNode.js の二つが必要になるので、
-ということで、 [Herokuのマニュアル][Using Multiple Buildpacks for an App] に従って以下のようにNode.js→Pythonと設定できるようにしてあげました。
+さて、基本は上記の2点で充分かと思いますが、前回作成した環境では追加でいくつか変更なり対応が必要でした。
+箇条書きにすると以下の点。
 
-さらに、 `npm install` で `devDependencies` もインストールしてほしかったので、 `NPM_CONFIG_PRODUCTION` の値をfalseにしていたり、
-さらにその後に `npm run dev` をしてほしかったので、以下の差分も追加してます。
+- PythonとNode.jsを両方とも入れて、Node.jsの環境から先に構築する
+- Node.jsインストール後にnodeコマンドを走らせる
+- 変数 `apiRoot` を変更する
+- サブディレクトリをherokuにpushする
 
-```patch
-diff --git a/todoapp.server/package.json b/todoapp.server/package.json
-index 8d8bea2..931ddd0 100644
---- a/todoapp.server/package.json
-+++ b/todoapp.server/package.json
-@@ -12,7 +12,7 @@
-     "test": "npm run unit && npm run e2e",
-     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
-     "build": "node build/build.js",
--    "postinstall": "node build/build.js"
-+    "heroku-postbuild": "node build/build.js"
-   },
-   "dependencies": {
-     "axios": "^0.17.1",
-```
-
-ということで、ずらっと並べると以下のようなコマンドでデプロイしました。
-なお、コマンド叩く際のカレントディレクトリが悪かったからなのか、うまいことremote登録してくれなかったので、herokuコマンドを余分に叩いてます。
-(herokuコマンドの部分は一部伏せ字にしてます)。
-
+ということで、まずはherokuのappだけ作成し……
 
 ```shellsession
 % heroku login
@@ -452,10 +435,23 @@ Enter your Heroku credentials:
 Email: xxxx@xxxxx.xxx
 Password: **********
 Two-factor code: ******
-Logged in as rare@tirasweel.org
-(todoapp.server-QYHaGtXw) rare@ambisch% heroku create
+Logged in as xxxx@xxxxx.xxx
+% heroku create
 Creating app... done, ⬢ xxxxx-xxxxx-00000
 https://xxxxx-xxxxx-00000.herokuapp.com/ | https://git.heroku.com/xxxxx-xxxxx-00000.git
+% heroku git:remote -a xxxxx-xxxxx-00000
+set git remote heroku to https://git.heroku.com/xxxxx-xxxxx-00000.git
+```
+
+順を追って見ていきます。
+
+### PythonとNode.jsを両方とも入れて、Node.jsの環境から先に構築する
+
+通常、HerokuさんはPipfileやらpackage.jsonがあれば良きに計らってくるのですが、今回の環境では PythonとNode.js の二つが必要になります。
+さらに言うと、先にNode.jsの環境を構築してから、PythonないしDjango側を構築してほしいのです。
+ということで、 [Herokuのマニュアル][Using Multiple Buildpacks for an App] に従って以下のようにNode.js→Pythonと設定できるようにしてあげました。
+
+```shellsession
 % heroku buildpacks:set heroku/python
 Buildpack set. Next release on xxxxx-xxxxx-00000 will use heroku/python.
 Run git push heroku master to create a new release using this buildpack.
@@ -464,9 +460,72 @@ Buildpack added. Next release on xxxxx-xxxxx-00000 will use:
   1. heroku/nodejs
   2. heroku/python
 Run git push heroku master to create a new release using these buildpacks.
+```
+
+### Node.jsインストール後にnodeコマンドを走らせる
+
+前回準備した環境では、 `deploy.sh` の中でdjangoの起動前に `npm run dev` を実行してました。
+`package.json` の中を見ると、実施には `node build/build.js` を実行しているようです。
+今回の場合、 `package.json` に以下の行を加えることにより、herokuでのNode.js環境構築後にスクリプトを走らせるようにしました。
+
+```diff
+diff --git a/todoapp.server/package.json b/todoapp.server/package.json
+index 8d8bea2..931ddd0 100644
+--- a/todoapp.server/package.json
++++ b/todoapp.server/package.json
+@@ -12,7 +12,7 @@
+     "test": "npm run unit && npm run e2e",
+     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
+     "build": "node build/build.js",
++    "heroku-postbuild": "node build/build.js"
+   },
+   "dependencies": {
+     "axios": "^0.17.1",
+```
+
+また、 `npm run dev` では`devDependencies` で指定されているパッケージも必要だったので、 `NPM_CONFIG_PRODUCTION` の値をfalseにする必要もありました。
+
+```shellsession
 % heroku config:set NPM_CONFIG_PRODUCTION=false
 Setting NPM_CONFIG_PRODUCTION and restarting ⬢ xxxxx-xxxxx-00000... done, v3
 NPM_CONFIG_PRODUCTION: false
+```
+
+### 変数 `apiRoot` を変更する。
+
+実は、地味に一番困りました。
+前回の環境では、Vue.jsからDjangoへのアクセスのために用意した `store.js` の中で、 `apiRoot` という変数を `http://localhost:8000/` としてました。
+が、これだと当然 heroku 側に向いてくれません。
+世の中には `process.env.PORT` だとか `process.env.HEROKU_APP_NAME` とかを使って云々という情報も転がってましたが、今回JavaScript側が動くのがクライアント側なのでどうしようもありません。
+デプロイ時にその辺りを拾って、設定ファイルを生成するしかないかなぁ、と考えてたりしましたが、結局のところ以下で大丈夫でした。なんかの拍子に駄目になりそうな気もするけど。
+
+```diff
+diff --git a/todoapp.server/src/store/store.js b/todoapp.server/src/store/store.js
+index ad5e7c6..4c2e0b4 100644
+--- a/todoapp.server/src/store/store.js
++++ b/todoapp.server/src/store/store.js
+@@ -4,8 +4,8 @@ import api from './api.js'
+
+ Vue.use(Vuex)
+
+-const apiRoot = 'http://localhost:8000'
++const apiRoot = '.'
++
+ const store = new Vuex.Store({
+   state: {
+     todos: []
+```
+
+なお、 `HEROKU_APP_NAME` を使いたい場合、 [`heroku labs:enable runtime-dyno-metadata` してあげないと駄目なので][Heroku Labs: Dyno Metadata] ご注意を(一敗)。
+
+### サブディレクトリをherokuにpushする
+
+そして、順番は前後しますがherokuにpushしようとした段階で、今回はAndroidアプリと共存したようなgitリポジトリを作成してしまった事に気付きました。
+サブディレクトリだけherokuにデプロイとかできないのかなぁ、とか考えてたら、 [みんな大好きStack Overflow][How can I deploy/push only a subdirectory of my git repo to Heroku?] にて回答がありました。
+git-subtreeをつかえばいけるようです。
+あと、subtreeにはforceオプションがないのですが、 [こういったむずかしいこと][How do I reset a Heroku git repository to its initial state?] をすれば同等の事ができるようです。
+
+```shellsession
 % git subtree push --prefix todoapp.server heroku master
 git push using:  heroku master
 Counting objects: 3, done.
@@ -484,6 +543,11 @@ remote:
 remote: Verifying deploy... done.
 To https://git.heroku.com/xxxxx-xxxxx-00000.git
    cc2cec0..2f6aa7f  2f6aa7f8e28661c7e3c1ee003785c18fc7f4304a -> master
+```
+
+その後、migrateコマンドを走らせ、superuserをつくり、REST framework用のtokenもつくり……。
+
+```shellsession
 % heroku run python manage.py migrate
 Running python manage.py migrate on ⬢ xxxxx-xxxxx-00000... up, run.9898 (Free)
 Operations to perform:
@@ -514,27 +578,56 @@ Email address: xxxx@xxxxx.xxx
 Password:
 Password (again):
 Superuser created successfully.
+% heroku run python manage.py drf_create_token xxxx
+Running python manage.py drf_create_token xxxx on ⬢ xxxxx-xxxxx-00000... up, run.8523 (Free)
+Generated token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx for user xxxx
 ```
+
+ようやっとAndroidアプリから良い感じにアクセスできる環境ができました!!
+
+
+## ひとまずここまでのまとめ
+
+ということで、今回の記事はここまで。
+大分ながくなりましたが、前回のwebアプリをAndroidアプリから使うために、
+
+- jsonにtoken認証でアクセスできるようにした
+- Herokuにデプロイした
+
+といったところまでいきました。
+さて、いよいよAndroidアプリの方の実装にいきたいと思います。ツカレタ……。
 
 
 ## 参考にさせていただいたもの
 
-* [TokenAuthentication][]
-* [Django Rest Framework Token Authentication @ Stack Overflow][]
-* [Can't set headers for DELETE method][]
-* [django-heroku][]
-* [How can I deploy/push only a subdirectory of my git repo to Heroku?][]
+- [Python Development Workflow for Humans][Pipenv]
+- [pip freeze includes "pkg-resources==0.0.0"][DebianPkgResources]
+- [TokenAuthentication][]
+- [Django Rest Framework Token Authentication @ Stack Overflow][]
+- [CSRF Failed: CSRF token missing or incorrect][]
+- [Cross Site Request Forgery protection][]
+- [vue-resource の引退について][]
+- [axios][]
+- [Can't set headers for DELETE method][]
+- [django-heroku][]
+- [Gunicorn][]
+- [Using Multiple Buildpacks for an App][]
+- [How can I deploy/push only a subdirectory of my git repo to Heroku?][]
+- [How do I reset a Heroku git repository to its initial state?][]
 
-[DjangoRestFramework]:http://www.django-rest-framework.org/
-[DeploySubDirectoryToHeroku]:https://stackoverflow.com/questions/7539382/how-can-i-deploy-push-only-a-subdirectory-of-my-git-repo-to-heroku
 [DebianPkgResources]:https://github.com/pypa/pip/issues/4668
+[Pipenv]:https://github.com/pypa/pipenv
+[DjangoRestFramework]:http://www.django-rest-framework.org/
 [TokenAuthentication]:http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
 [Django Rest Framework Token Authentication @ Stack Overflow]:https://stackoverflow.com/questions/14838128/django-rest-framework-token-authentication
 [CSRF Failed: CSRF token missing or incorrect]:https://stackoverflow.com/questions/26639169/csrf-failed-csrf-token-missing-or-incorrect
+[Cross Site Request Forgery protection]:https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
 [vue-resource の引退について]:https://jp.vuejs.org/2016/11/03/retiring-vue-resource/
 [axios]:https://github.com/axios/axios
 [Can't set headers for DELETE method]:https://github.com/axios/axios/issues/509
 [django-heroku]:https://github.com/heroku/django-heroku
-[How can I deploy/push only a subdirectory of my git repo to Heroku?]:https://stackoverflow.com/questions/7539382/how-can-i-deploy-push-only-a-subdirectory-of-my-git-repo-to-heroku
 [Gunicorn]:http://gunicorn.org/
 [Using Multiple Buildpacks for an App]:https://devcenter.heroku.com/articles/using-multiple-buildpacks-for-an-app
+[Heroku Labs: Dyno Metadata]:https://devcenter.heroku.com/articles/dyno-metadata
+[How can I deploy/push only a subdirectory of my git repo to Heroku?]:https://stackoverflow.com/questions/7539382/how-can-i-deploy-push-only-a-subdirectory-of-my-git-repo-to-heroku
+[How do I reset a Heroku git repository to its initial state?]:https://stackoverflow.com/questions/12644855/how-do-i-reset-a-heroku-git-repository-to-its-initial-state/13403588#13403588

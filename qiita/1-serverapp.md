@@ -22,6 +22,10 @@ Androidのアプリを書いてみようかと思うのですが、それなり�
 
 ![ss_part1_achievement.png](https://qiita-image-store.s3.amazonaws.com/0/122416/f7bb1e51-a8d0-a976-aeee-b8face54767f.png)
 
+### 関連記事
+
+- [Vue.js + Django REST Framework + Android でTODOアプリを書いてみるテスト Part 2/?](https://qiita.com/rarewin/items/aece9d05aab3964c0300)
+
 
 ## 準備
 
@@ -400,8 +404,7 @@ Djangoに日付を渡す際に、moment-strftimeで `%Y-%m-%d` 形式に変換�
 
 ## ひとまずここまでのまとめ
 
-ということで、今回の記事はここまで。
-ひとまず
+ということで、今回の記事はここまで。ひとまず
 
 - TODO管理用のDBを作成 (Django)
 - TODOをRESTで管理できるようにする (Django REST Framework)
