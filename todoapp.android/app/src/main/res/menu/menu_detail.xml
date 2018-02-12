@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.tirasweel.todoapp.DetailActivity">
     <item
-        android:id="@+id/menuEditItem"
+        android:id="@+id/menu_detail_edit"
         android:icon="@drawable/ic_edit_black_24dp"
         android:orderInCategory="101"
-        android:title="Item"
+        android:title="@string/menu_edit"
         app:showAsAction="always" />
 </menu>

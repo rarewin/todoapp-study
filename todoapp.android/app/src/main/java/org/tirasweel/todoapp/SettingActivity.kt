@@ -1,6 +1,5 @@
 package org.tirasweel.todoapp
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -14,8 +13,12 @@ class SettingActivity : AppCompatActivity() {
     lateinit var mTodoAppSetting: TodoAppSetting
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         menuInflater.inflate(R.menu.menu_setting, menu)
+
+        tintMenuIcon(menu.findItem(R.id.menu_setting_done))
+        tintMenuIcon(menu.findItem(R.id.menu_setting_cancel))
+
         return true
     }
 
@@ -23,20 +26,17 @@ class SettingActivity : AppCompatActivity() {
 
         return when (item.itemId) {
 
-            R.id.menu_done -> {
+            R.id.menu_setting_done -> {
 
                 mTodoAppSetting.setServerUri(text_input_edit_jsonHost.text.toString())
                 mTodoAppSetting.setApiToken(text_input_edit_apitoken.text.toString())
-
                 makeToast(this, getString(R.string.setting_changed))
                 finish()
-
                 true
             }
-            R.id.menu_cancel -> {
+            R.id.menu_setting_cancel -> {
                 makeToast(this, getString(R.string.setting_not_changed))
                 finish()
-
                 true
             }
             else -> super.onOptionsItemSelected(item)

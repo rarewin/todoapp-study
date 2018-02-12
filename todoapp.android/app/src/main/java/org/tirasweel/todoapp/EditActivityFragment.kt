@@ -15,4 +15,5 @@ class EditActivityFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_edit, container, false)
     }
+
 }

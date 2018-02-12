@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.tirasweel.todoapp.SettingActivity">
     <item
-        android:id="@+id/menu_done"
+        android:id="@+id/menu_setting_done"
         android:icon="@drawable/ic_done_black_24dp"
         android:orderInCategory="101"
         android:title="@string/menu_done"
         app:showAsAction="always" />
     <item
-        android:id="@+id/menu_cancel"
+        android:id="@+id/menu_setting_cancel"
         android:icon="@drawable/ic_cancel_black_24dp"
         android:orderInCategory="102"
         android:title="Cancel"
