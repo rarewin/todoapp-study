@@ -20,7 +20,7 @@
             android:layout_height="wrap_content">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/textInputEditJsonHost"
+                android:id="@+id/text_input_edit_jsonHost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/json_host"
@@ -33,7 +33,7 @@
             android:layout_height="match_parent">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/textInputEditApiToken"
+                android:id="@+id/text_input_edit_apitoken"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/api_token" />

@@ -6,6 +6,8 @@
     <string name="api_token">API Token</string>
     <string name="menu_done">Done</string>
     <string name="menu_cancel">Cancel</string>
+    <string name="setting_changed">Settings have been changed</string>
+    <string name="setting_not_changed">Settings have NOT been changed</string>
     <string name="title_activity_detail">Detail</string>
     <string name="menu_edit">編集</string>
     <string name="title_activity_edit">Edit</string>
