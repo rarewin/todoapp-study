@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.tirasweel.todoapp.DetailActivity">
+    <item
+        android:id="@+id/menuEditItem"
+        android:icon="@drawable/ic_edit_black_24dp"
+        android:orderInCategory="101"
+        android:title="Item"
+        app:showAsAction="always" />
+</menu>

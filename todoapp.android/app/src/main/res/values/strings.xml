@@ -6,4 +6,7 @@
     <string name="api_token">API Token</string>
     <string name="menu_done">Done</string>
     <string name="menu_cancel">Cancel</string>
+    <string name="title_activity_detail">Detail</string>
+    <string name="menu_edit">編集</string>
+    <string name="title_activity_edit">Edit</string>
 </resources>
