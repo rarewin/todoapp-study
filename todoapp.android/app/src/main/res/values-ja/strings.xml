@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ToDoアプリ</string>
+    <string name="action_settings">設定</string>
+    <string name="title_activity_setting">設定</string>
+    <string name="json_host">サーバーURL</string>
+    <string name="api_token">APIトークン</string>
+    <string name="menu_done">保存</string>
+    <string name="menu_cancel">破棄</string>
+</resources>

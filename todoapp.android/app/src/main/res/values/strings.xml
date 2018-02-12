@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">ToDoApp</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_setting">SettingActivity</string>
+    <string name="title_activity_setting">Setting</string>
+    <string name="json_host">URL of TODO App. server</string>
+    <string name="api_token">API Token</string>
+    <string name="menu_done">Done</string>
+    <string name="menu_cancel">Cancel</string>
 </resources>
