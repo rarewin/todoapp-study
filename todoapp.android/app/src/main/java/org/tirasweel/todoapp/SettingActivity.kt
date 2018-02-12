@@ -11,6 +11,8 @@ import kotlinx.android.synthetic.main.fragment_setting.*
 
 class SettingActivity : AppCompatActivity() {
 
+    lateinit var mTodoAppSetting: TodoAppSetting
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_setting, menu)
@@ -20,17 +22,11 @@ class SettingActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         return when (item.itemId) {
+
             R.id.menu_done -> {
 
-                val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-                val editor = sharedPref.edit()
-
-                editor.putString(SettingKey.SETTING_SERVER_URI.toString(),
-                        text_input_edit_jsonHost.text.toString())
-                editor.putString(SettingKey.SETTING_API_TOKEN.toString(),
-                        text_input_edit_apitoken.text.toString())
-
-                editor.commit()
+                mTodoAppSetting.setServerUri(text_input_edit_jsonHost.text.toString())
+                mTodoAppSetting.setApiToken(text_input_edit_apitoken.text.toString())
 
                 makeToast(this, getString(R.string.setting_changed))
                 finish()
@@ -49,9 +45,13 @@ class SettingActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        mTodoAppSetting = TodoAppSetting(this)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
         setSupportActionBar(toolbar)
+
     }
 
 }
