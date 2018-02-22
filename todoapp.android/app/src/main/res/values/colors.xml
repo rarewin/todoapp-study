@@ -4,4 +4,11 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorMenuIcon">#ffffff</color>
+
+    <color name="colorPri1">#ff0000</color>
+    <color name="colorPri2">#ff0088</color>
+    <color name="colorPri3">#880088</color>
+    <color name="colorPri4">#8800ff</color>
+    <color name="colorPri5">#0000ff</color>
+    <color name="colorPriNone">#444444</color>
 </resources>

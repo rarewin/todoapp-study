@@ -7,18 +7,27 @@ import android.view.Menu
 import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.Serializable
 
 class MainActivity : AppCompatActivity() {
 
-    var mTodoAppSetting: TodoAppSetting? = null
+    private var mTodoAppSetting: TodoAppSetting? = null
+    // private var mRecyclerView: RecyclerView? = null
+    // private var mAdapter: RecyclerView.Adapter? = null
+    // private var mLayoutManager: RecyclerView.LayoutManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         mTodoAppSetting = TodoAppSetting(this)
+
+        supportFragmentManager.beginTransaction()
+                .add(R.id.container_main,
+                        MainActivityFragment.newInstance(1),
+                        "MAIN")
+                .commit()
 
         fab.setOnClickListener { view -> {} }
 
@@ -45,4 +54,5 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

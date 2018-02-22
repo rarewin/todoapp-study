@@ -9,6 +9,9 @@
     <string name="setting_changed">Settings have been changed</string>
     <string name="setting_not_changed">Settings have NOT been changed</string>
     <string name="title_activity_detail">Detail</string>
-    <string name="menu_edit">編集</string>
+    <string name="menu_edit">Edit</string>
     <string name="title_activity_edit">Edit</string>
+
+    <string name="msg_invalid_url">configured URL looks invalid</string>
+    <string name="msg_nodeadline">no deadline</string>
 </resources>

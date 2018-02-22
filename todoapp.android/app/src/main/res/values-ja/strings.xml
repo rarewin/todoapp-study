@@ -11,4 +11,6 @@
     <string name="title_activity_detail">詳細</string>
     <string name="menu_edit">編集</string>
     <string name="title_activity_edit">編集</string>
+
+    <string name="msg_invalid_url">設定されているURLが不正です</string>
 </resources>
