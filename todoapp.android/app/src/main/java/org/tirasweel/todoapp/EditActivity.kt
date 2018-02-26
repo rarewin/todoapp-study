@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
+import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_edit.*
 
@@ -21,4 +22,20 @@ class EditActivity : AppCompatActivity() {
         tintMenuIcon(menu.findItem(R.id.menu_edit_cancel))
         return true
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        return when (item.itemId) {
+
+            R.id.menu_edit_done -> {
+                true
+            }
+            R.id.menu_edit_cancel -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 }

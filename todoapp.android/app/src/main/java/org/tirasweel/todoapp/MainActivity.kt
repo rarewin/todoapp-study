@@ -29,7 +29,12 @@ class MainActivity : AppCompatActivity() {
                         "MAIN")
                 .commit()
 
-        fab.setOnClickListener { view -> {} }
+        fab.setOnClickListener {
+            run {
+                val intent = Intent(this, EditActivity::class.java)
+                startActivity(intent)
+            }
+        }
 
     }
 

@@ -12,6 +12,17 @@
     <string name="menu_edit">Edit</string>
     <string name="title_activity_edit">Edit</string>
 
+    <string name="todo_text">task</string>
+    <string name="todo_deadline">deadline</string>
+    <string name="todo_priority">priority (1: high, 5: low)</string>
+    <string name="todo_radio_priority_1">1</string>
+    <string name="todo_radio_priority_2">2</string>
+    <string name="todo_radio_priority_3">3</string>
+    <string name="todo_radio_priority_4">4</string>
+    <string name="todo_radio_priority_5">5</string>
+    <string name="todo_done">done</string>
+    <string name="todo_memo">memo</string>
+
     <string name="msg_invalid_url">configured URL looks invalid</string>
     <string name="msg_nodeadline">no deadline</string>
 </resources>
