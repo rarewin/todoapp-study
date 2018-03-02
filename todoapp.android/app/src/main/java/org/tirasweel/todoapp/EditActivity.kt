@@ -1,14 +1,16 @@
 package org.tirasweel.todoapp
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_edit.*
+import kotlinx.android.synthetic.main.fragment_edit.*
 
-class EditActivity : AppCompatActivity() {
+class EditActivity : AppCompatActivity(),
+        EditActivityFragment.OnFragmentInteractionListener,
+        DatePickerDialogFragment.OnDateSetListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,14 @@ class EditActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDatePickerLaunched() {
+        DatePickerDialogFragment().show(supportFragmentManager, "datepickr")
+    }
+
+    override fun onDateSelected(dateString: String) {
+        text_edit_deadline.setText(dateString)
     }
 
 }
