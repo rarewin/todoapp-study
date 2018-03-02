@@ -11,8 +11,7 @@ import kotlinx.android.synthetic.main.fragment_edit.*
 /**
  * A placeholder fragment containing a simple view.
  */
-class EditActivityFragment : Fragment(),
-        DatePickerDialogFragment.OnDateSetListener {
+class EditActivityFragment : Fragment() {
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -29,10 +28,6 @@ class EditActivityFragment : Fragment(),
             mListener = context
         }
 
-    }
-
-    override fun onDateSelected(dateString: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
