@@ -15,6 +15,18 @@ class EditActivityFragment : Fragment() {
 
     private var mListener: OnFragmentInteractionListener? = null
 
+    private var mMode = EditMode.EDIT_EDIT
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            mMode = it.getSerializable(ARG_editMode) as EditMode
+        }
+
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_edit, container, false)
@@ -34,10 +46,12 @@ class EditActivityFragment : Fragment() {
 
         super.onActivityCreated(savedInstanceState)
 
+        // disable for new TODO
+        check_edit_done.isEnabled = false
+
         imagebutton_todo_deadline.setOnClickListener {
             mListener?.onDatePickerLaunched()
         }
-
     }
 
     interface OnFragmentInteractionListener {
@@ -46,15 +60,13 @@ class EditActivityFragment : Fragment() {
 
     companion object {
 
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
+        private val ARG_editMode = EditMode.EDIT_NEW.name
 
-        // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int) =
+        fun newInstance(edit_mode: EditMode) =
                 EditActivityFragment().apply {
                     arguments = Bundle().apply {
-                        putInt(ARG_COLUMN_COUNT, columnCount)
+                        putSerializable(ARG_editMode, edit_mode)
                     }
                 }
     }

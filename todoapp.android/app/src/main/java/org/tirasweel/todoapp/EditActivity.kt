@@ -7,15 +7,26 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.fragment_edit.*
+import org.tirasweel.todoapp.model.TodoModel
 
 class EditActivity : AppCompatActivity(),
         EditActivityFragment.OnFragmentInteractionListener,
         DatePickerDialogFragment.OnDateSetListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
         setSupportActionBar(toolbar)
+
+        val bundle = intent.extras
+        val mode = bundle.getSerializable(IntentKey.TODO_APP_EDIT_MODE.name)
+
+        supportFragmentManager.beginTransaction()
+                .add(R.id.container_edit,
+                        EditActivityFragment.newInstance(EditMode.EDIT_NEW),
+                        "EDIT")
+                .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -30,6 +41,16 @@ class EditActivity : AppCompatActivity(),
         return when (item.itemId) {
 
             R.id.menu_edit_done -> {
+
+                /*
+                var todo = TodoModel(text_edit_task,
+                        text_edit_deadline,
+                        0,
+                        false,
+                        text_edit_memo
+                )
+                */
+
                 true
             }
             R.id.menu_edit_cancel -> {

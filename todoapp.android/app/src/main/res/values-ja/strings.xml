@@ -12,5 +12,16 @@
     <string name="menu_edit">編集</string>
     <string name="title_activity_edit">編集</string>
 
+    <string name="todo_text">タスク</string>
+    <string name="todo_deadline">期日</string>
+    <string name="todo_priority">優先度 (1: 高, 5: 低)</string>
+    <string name="todo_radio_priority_1">1</string>
+    <string name="todo_radio_priority_2">2</string>
+    <string name="todo_radio_priority_3">3</string>
+    <string name="todo_radio_priority_4">4</string>
+    <string name="todo_radio_priority_5">5</string>
+    <string name="todo_done">完了</string>
+    <string name="todo_memo">メモ</string>
+
     <string name="msg_invalid_url">設定されているURLが不正です</string>
 </resources>

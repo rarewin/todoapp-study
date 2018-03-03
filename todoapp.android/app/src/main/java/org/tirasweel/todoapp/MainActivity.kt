@@ -25,13 +25,16 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
                 .add(R.id.container_main,
-                        MainActivityFragment.newInstance(1),
+                        MainActivityFragment.newInstance(),
                         "MAIN")
                 .commit()
 
         fab.setOnClickListener {
             run {
-                val intent = Intent(this, EditActivity::class.java)
+                val intent = Intent(this, EditActivity::class.java).apply {
+                    putExtra(IntentKey.TODO_APP_EDIT_MODE.name, EditMode.EDIT_NEW)
+                }
+
                 startActivity(intent)
             }
         }
