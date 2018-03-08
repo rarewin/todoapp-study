@@ -7,16 +7,15 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_setting.*
 import kotlinx.android.synthetic.main.fragment_setting.*
-import org.tirasweel.todoapp.todo.TodoAppSetting
+
 
 class SettingActivity : AppCompatActivity() {
-
-    lateinit var mTodoAppSetting: TodoAppSetting
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
         menuInflater.inflate(R.menu.menu_setting, menu)
 
+        // tint menu icons to white
         tintMenuIcon(menu.findItem(R.id.menu_setting_done))
         tintMenuIcon(menu.findItem(R.id.menu_setting_cancel))
 
@@ -29,14 +28,19 @@ class SettingActivity : AppCompatActivity() {
 
             R.id.menu_setting_done -> {
 
-                mTodoAppSetting.setServerUri(text_input_edit_jsonHost.text.toString())
-                mTodoAppSetting.setApiToken(text_input_edit_apitoken.text.toString())
-                makeToast(this, getString(R.string.setting_changed))
+                intent.apply {
+                    putExtra(IntentKey.TODO_APP_SETTING_HOST.name,
+                            text_input_edit_jsonHost.text.toString())
+                    putExtra(IntentKey.TODO_APP_SETTING_API_TOKEN.name,
+                            text_input_edit_apitoken.text.toString())
+                }
+
+                setResult(REQUEST_NEWSETTING, intent)
                 finish()
                 true
             }
             R.id.menu_setting_cancel -> {
-                makeToast(this, getString(R.string.setting_not_changed))
+                setResult(REQUEST_NEWSETTING, intent)
                 finish()
                 true
             }
@@ -46,8 +50,6 @@ class SettingActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        mTodoAppSetting = TodoAppSetting(this)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)

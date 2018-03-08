@@ -14,3 +14,4 @@ enum class EditMode {
 
 
 const val REQUEST_NEWTODO = 100
+const val REQUEST_NEWSETTING = 200

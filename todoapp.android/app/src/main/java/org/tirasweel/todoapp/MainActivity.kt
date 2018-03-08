@@ -59,9 +59,8 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.menu_main_setting -> {
-                val intent = Intent(this, SettingActivity::class.java).apply {
-                }
-                startActivity(intent)
+                val intent = Intent(this, SettingActivity::class.java)
+                startActivityForResult(intent, REQUEST_NEWSETTING)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -70,9 +69,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        val todo = data?.getSerializableExtra(IntentKey.TODO_APP_EDIT_MODE_RESULT.name) as TodoModel
-
         super.onActivityResult(requestCode, resultCode, data)
+
+        when (resultCode) {
+
+            REQUEST_NEWSETTING -> {
+
+                val host = data?.getStringExtra(IntentKey.TODO_APP_SETTING_HOST.name)
+                val apitoken = data?.getStringExtra(IntentKey.TODO_APP_SETTING_API_TOKEN.name)
+
+                if (host == null && apitoken == null) {
+                    makeToast(this, getString(R.string.setting_not_changed))
+                } else {
+
+                    mTodoAppSetting!!.setServerUri(host ?: "")
+                    mTodoAppSetting!!.setApiToken(apitoken ?: "")
+
+                    makeToast(this, getString(R.string.setting_changed))
+                }
+            }
+            REQUEST_NEWTODO -> {
+                val todo = data?.getSerializableExtra(IntentKey.TODO_APP_EDIT_MODE_RESULT.name) as TodoModel
+            }
+        }
     }
 
 }
