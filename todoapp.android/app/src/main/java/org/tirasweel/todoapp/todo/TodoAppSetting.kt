@@ -1,8 +1,6 @@
-package org.tirasweel.todoapp
+package org.tirasweel.todoapp.todo
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.webkit.URLUtil
 
 class TodoAppSetting(context: Context) {

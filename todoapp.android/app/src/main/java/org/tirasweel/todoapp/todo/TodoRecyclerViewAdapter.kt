@@ -1,4 +1,4 @@
-package org.tirasweel.todoapp
+package org.tirasweel.todoapp.todo
 
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
@@ -10,7 +10,8 @@ import android.view.ViewGroup
 import org.tirasweel.todoapp.MainActivityFragment.OnListFragmentInteractionListener
 
 import kotlinx.android.synthetic.main.fragment_main.view.*
-import org.tirasweel.todoapp.model.TodoModel
+import org.tirasweel.todoapp.MyApplication
+import org.tirasweel.todoapp.R
 import java.text.SimpleDateFormat
 
 

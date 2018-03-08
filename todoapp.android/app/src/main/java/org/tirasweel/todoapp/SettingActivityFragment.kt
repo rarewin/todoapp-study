@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_setting.*
+import org.tirasweel.todoapp.todo.TodoAppSetting
 
 /**
  * A placeholder fragment containing a simple view.

@@ -1,6 +1,5 @@
-package org.tirasweel.todoapp
+package org.tirasweel.todoapp.todo
 
-import org.tirasweel.todoapp.model.TodoModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -8,10 +7,10 @@ import retrofit2.http.POST
 
 interface TodoClient {
 
-    @GET("/todos/?format=json")
+    @GET("/todos/")
     fun getTodos(): Call<ArrayList<TodoModel>>
 
-    @POST("/todo/")
+    @POST("/todos/")
     fun addTodo(@Body todo: TodoModel): Call<TodoModel>
 
 }

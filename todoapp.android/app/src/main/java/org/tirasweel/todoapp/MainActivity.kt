@@ -7,10 +7,13 @@ import android.view.Menu
 import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
+import org.tirasweel.todoapp.todo.TodoAppSetting
+import org.tirasweel.todoapp.todo.TodoModel
 
 class MainActivity : AppCompatActivity() {
 
     private var mTodoAppSetting: TodoAppSetting? = null
+
     // private var mRecyclerView: RecyclerView? = null
     // private var mAdapter: RecyclerView.Adapter? = null
     // private var mLayoutManager: RecyclerView.LayoutManager? = null
@@ -25,7 +28,9 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
                 .add(R.id.container_main,
-                        MainActivityFragment.newInstance(),
+                        MainActivityFragment.newInstance(
+                                mTodoAppSetting!!.getServerUri(),
+                                mTodoAppSetting!!.getApiToken()),
                         "MAIN")
                 .commit()
 
@@ -34,8 +39,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, EditActivity::class.java).apply {
                     putExtra(IntentKey.TODO_APP_EDIT_MODE.name, EditMode.EDIT_NEW)
                 }
-
-                startActivity(intent)
+                startActivityForResult(intent, REQUEST_NEWTODO)
             }
         }
 
@@ -55,12 +59,20 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.menu_main_setting -> {
-                val intent = Intent(this, SettingActivity::class.java)
+                val intent = Intent(this, SettingActivity::class.java).apply {
+                }
                 startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        val todo = data?.getSerializableExtra(IntentKey.TODO_APP_EDIT_MODE_RESULT.name) as TodoModel
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
 }

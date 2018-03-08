@@ -3,9 +3,7 @@ package org.tirasweel.todoapp
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.android.synthetic.main.fragment_edit.*
 
 /**
@@ -24,12 +22,13 @@ class EditActivityFragment : Fragment() {
         arguments?.let {
             mMode = it.getSerializable(ARG_editMode) as EditMode
         }
-
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_edit, container, false)
+
     }
 
     override fun onAttach(context: Context?) {
@@ -54,13 +53,36 @@ class EditActivityFragment : Fragment() {
         }
     }
 
+    // override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    //
+    //     if (item!!.itemId == R.id.menu_edit_done) {
+    //
+    //         if (text_edit_task.text.isNullOrEmpty()) {
+    //             text_edit_task.error = getString(R.string.msg_empty_todo)
+    //             return false
+    //         }
+    //
+    //         val todo = TodoModel(
+    //                 text_edit_task.text.toString(),
+    //                 //SimpleDateFormat.getDateInstance()
+    //                 //        .parse(text_edit_deadline.text.toString()),
+    //                 null,
+    //                 null, false, "")
+    //
+    //         return true
+    //
+    //     }
+    //
+    //     return super.onOptionsItemSelected(item)
+    // }
+
     interface OnFragmentInteractionListener {
         fun onDatePickerLaunched()
     }
 
     companion object {
 
-        private val ARG_editMode = EditMode.EDIT_NEW.name
+        private val ARG_editMode = IntentKey.TODO_APP_EDIT_MODE.name
 
         @JvmStatic
         fun newInstance(edit_mode: EditMode) =

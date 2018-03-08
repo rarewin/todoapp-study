@@ -7,6 +7,7 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_setting.*
 import kotlinx.android.synthetic.main.fragment_setting.*
+import org.tirasweel.todoapp.todo.TodoAppSetting
 
 class SettingActivity : AppCompatActivity() {
 
