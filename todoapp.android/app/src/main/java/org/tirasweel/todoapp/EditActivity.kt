@@ -44,9 +44,14 @@ class EditActivity : AppCompatActivity(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        return when (item.itemId) {
+        when (item.itemId) {
 
             R.id.menu_edit_done -> {
+
+                if (text_edit_task.text.isNullOrBlank()) {
+                    text_edit_task.error = getString(R.string.msg_empty_todo)
+                    return false
+                }
 
                 val priority = when {
                     radio_priority_1.isChecked -> 1
@@ -71,17 +76,16 @@ class EditActivity : AppCompatActivity(),
                         check_edit_done.isChecked,
                         text_edit_memo.text.toString())
 
-
                 intent.putExtra(IntentKey.TODO_APP_EDIT_MODE_RESULT.name, todo)
                 setResult(REQUEST_NEWTODO, intent)
                 finish()
-                true
+                return true
             }
             R.id.menu_edit_cancel -> {
                 finish()
-                true
+                return true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> {return super.onOptionsItemSelected(item)}
         }
     }
 

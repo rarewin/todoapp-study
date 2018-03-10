@@ -46,35 +46,15 @@ class EditActivityFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         // disable for new TODO
-        check_edit_done.isEnabled = false
+        check_edit_done.isEnabled = when (arguments?.getSerializable(ARG_editMode) as EditMode) {
+            EditMode.EDIT_NEW -> false
+            else -> true
+        }
 
         imagebutton_todo_deadline.setOnClickListener {
             mListener?.onDatePickerLaunched()
         }
     }
-
-    // override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-    //
-    //     if (item!!.itemId == R.id.menu_edit_done) {
-    //
-    //         if (text_edit_task.text.isNullOrEmpty()) {
-    //             text_edit_task.error = getString(R.string.msg_empty_todo)
-    //             return false
-    //         }
-    //
-    //         val todo = TodoModel(
-    //                 text_edit_task.text.toString(),
-    //                 //SimpleDateFormat.getDateInstance()
-    //                 //        .parse(text_edit_deadline.text.toString()),
-    //                 null,
-    //                 null, false, "")
-    //
-    //         return true
-    //
-    //     }
-    //
-    //     return super.onOptionsItemSelected(item)
-    // }
 
     interface OnFragmentInteractionListener {
         fun onDatePickerLaunched()

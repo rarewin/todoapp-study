@@ -14,10 +14,6 @@ class MainActivity : AppCompatActivity() {
 
     private var mTodoAppSetting: TodoAppSetting? = null
 
-    // private var mRecyclerView: RecyclerView? = null
-    // private var mAdapter: RecyclerView.Adapter? = null
-    // private var mLayoutManager: RecyclerView.LayoutManager? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
