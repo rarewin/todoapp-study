@@ -13,7 +13,7 @@
     <string name="title_activity_edit">編集</string>
 
     <string name="todo_text">タスク</string>
-    <string name="todo_deadline">期日</string>
+    <string name="todo_deadline">期日 (XXXX-XX-XX)</string>
     <string name="todo_priority">優先度 (1: 高, 5: 低)</string>
     <string name="todo_radio_priority_1">1</string>
     <string name="todo_radio_priority_2">2</string>

@@ -54,6 +54,6 @@ class DatePickerDialogFragment: DialogFragment(),
     }
 
     private fun getDateString(year: Int, month: Int, day: Int)
-            = "%04d/%02d/%02d".format(year, month + 1, day)  // date-picker returns month starting from zero...
+            = "%04d-%02d-%02d".format(year, month + 1, day)  // date-picker returns month starting from zero...
 
 }

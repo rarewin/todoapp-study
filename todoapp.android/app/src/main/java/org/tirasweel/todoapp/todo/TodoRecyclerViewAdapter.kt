@@ -12,7 +12,6 @@ import org.tirasweel.todoapp.MainActivityFragment.OnListFragmentInteractionListe
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import org.tirasweel.todoapp.MyApplication
 import org.tirasweel.todoapp.R
-import java.text.SimpleDateFormat
 
 
 class TodoRecyclerViewAdapter(
@@ -29,11 +28,7 @@ class TodoRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         holder.mTodoText.text = mValues[position].text
-
-        val dateFormat = SimpleDateFormat("yyyy MMM dd")
-        val deadline = mValues[position].deadline
-        val deadlineString = if (deadline != null) dateFormat.format(deadline) else MyApplication.mAppContext.getString(R.string.msg_nodeadline)
-        holder.mTodoDeadline.text = deadlineString
+        holder.mTodoDeadline.text = mValues[position].deadline
 
         holder.mTodoIcon.setColorFilter(
                 ContextCompat.getColor(

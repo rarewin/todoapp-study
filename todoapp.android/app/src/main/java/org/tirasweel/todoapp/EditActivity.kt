@@ -8,11 +8,13 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.fragment_edit.*
 import org.tirasweel.todoapp.todo.TodoModel
-import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 class EditActivity : AppCompatActivity(),
         EditActivityFragment.OnFragmentInteractionListener,
         DatePickerDialogFragment.OnDateSetListener {
+
+    private val DATE_RE = Pattern.compile("(\\d{1,4})-(\\d{1,2})-(\\d{1,2})")
 
     private var mEditFragment: EditActivityFragment? = null
 
@@ -48,10 +50,26 @@ class EditActivity : AppCompatActivity(),
 
             R.id.menu_edit_done -> {
 
+                var isValid = true
+
+                // check if todo text exists
                 if (text_edit_task.text.isNullOrBlank()) {
                     text_edit_task.error = getString(R.string.msg_empty_todo)
-                    return false
+                    isValid = false
                 }
+
+                // check if date string is valid
+                val dateStr = text_edit_deadline.text.toString()
+
+                if (!DATE_RE.matcher(dateStr).matches() && !dateStr.isNullOrBlank()) {
+                    text_edit_deadline.error = getString(R.string.msg_invalid_date_string)
+                    isValid = false
+                }
+
+                if (!isValid)
+                    return false
+
+                val date: String? = if (dateStr.isNotBlank()) dateStr else null
 
                 val priority = when {
                     radio_priority_1.isChecked -> 1
@@ -60,13 +78,6 @@ class EditActivity : AppCompatActivity(),
                     radio_priority_4.isChecked -> 4
                     radio_priority_5.isChecked -> 5
                     else -> null
-                }
-
-                val date = try {
-                    SimpleDateFormat.getDateInstance()
-                            .parse(text_edit_deadline.text.toString())
-                } catch (e: Exception) {
-                    null
                 }
 
                 val todo = TodoModel(
@@ -98,3 +109,4 @@ class EditActivity : AppCompatActivity(),
     }
 
 }
+

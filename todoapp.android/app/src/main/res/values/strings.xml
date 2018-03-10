@@ -13,7 +13,7 @@
     <string name="title_activity_edit">Edit</string>
 
     <string name="todo_text">task</string>
-    <string name="todo_deadline">deadline</string>
+    <string name="todo_deadline">deadline (XXXX-XX-XX)</string>
     <string name="todo_priority">priority (1: high, 5: low)</string>
     <string name="todo_radio_priority_1">1</string>
     <string name="todo_radio_priority_2">2</string>
@@ -29,5 +29,6 @@
     <string name="msg_new_todo_registerd">new TODO item has been registered</string>
     <string name="msg_fail_new_todo_registered">failed to register new TODO</string>
     <string name="msg_fail_get_todos">failed to obtain TODOs</string>
+    <string name="msg_invalid_date_string">invalid string for deadline</string>
     <string name="image_desc_deadline_calendar">calendar</string>
 </resources>
