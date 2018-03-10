@@ -79,14 +79,14 @@ class EditActivity : AppCompatActivity(),
                 intent.putExtra(IntentKey.TODO_APP_EDIT_MODE_RESULT.name, todo)
                 setResult(REQUEST_NEWTODO, intent)
                 finish()
-                return true
             }
             R.id.menu_edit_cancel -> {
                 finish()
-                return true
             }
             else -> {return super.onOptionsItemSelected(item)}
         }
+
+        return true
     }
 
     override fun onDatePickerLaunched() {

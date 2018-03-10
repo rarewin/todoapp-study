@@ -26,5 +26,8 @@
     <string name="msg_invalid_url">configured URL looks invalid</string>
     <string name="msg_nodeadline">no deadline</string>
     <string name="msg_empty_todo">title of TODO is mandatory</string>
+    <string name="msg_new_todo_registerd">new TODO item has been registered</string>
+    <string name="msg_fail_new_todo_registered">failed to register new TODO</string>
+    <string name="msg_fail_get_todos">failed to obtain TODOs</string>
     <string name="image_desc_deadline_calendar">calendar</string>
 </resources>

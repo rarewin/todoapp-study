@@ -5,10 +5,21 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.webkit.URLUtil
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import org.tirasweel.todoapp.todo.TodoAppSetting
+import org.tirasweel.todoapp.todo.TodoClient
 import org.tirasweel.todoapp.todo.TodoModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -85,9 +96,51 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             REQUEST_NEWTODO -> {
+
                 val todo = data?.getSerializableExtra(IntentKey.TODO_APP_EDIT_MODE_RESULT.name) as TodoModel
+
+                val host = mTodoAppSetting!!.getServerUri()
+                val apitoken = mTodoAppSetting!!.getApiToken()
+
+                // if json_host is invalidTODO_APP_SETTING
+                if (!URLUtil.isValidUrl(host)) {
+                    makeToast(MyApplication.mAppContext, getString(R.string.msg_invalid_url))
+                }
+
+                val client = OkHttpClient.Builder()
+                        .addInterceptor(Interceptor { chain ->
+
+                            val orig = chain.request()
+                            val request = orig.newBuilder()
+                                    .header("Authorization", "Token " + apitoken)
+                                    .method(orig.method(), orig.body())
+                                    .build()
+
+                            chain.proceed(request)
+
+                        }).build()
+
+                val gson = GsonBuilder()
+                        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                        .create()
+
+                val retrofit = Retrofit.Builder()
+                        .baseUrl(host)
+                        .addConverterFactory(GsonConverterFactory.create(gson))
+                        .client(client)
+                        .build()
+
+                val todoClient = retrofit.create(TodoClient::class.java)
+
+                todoClient.addTodo(todo).enqueue(object: Callback<TodoModel> {
+                    override fun onResponse(call: Call<TodoModel>?, response: Response<TodoModel>?) {
+                        makeToast(MyApplication.mAppContext, getString(R.string.msg_new_todo_registerd))
+                    }
+                    override fun onFailure(call: Call<TodoModel>?, t: Throwable?) {
+                        makeToast(MyApplication.mAppContext, getString(R.string.msg_fail_new_todo_registered))
+                    }
+                })
             }
         }
     }
-
 }

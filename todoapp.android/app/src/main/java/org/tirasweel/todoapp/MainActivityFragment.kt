@@ -67,18 +67,6 @@ class MainActivityFragment : Fragment() {
 
         val call = todoClient!!.getTodos()
 
-        // val p_client = OkHttpClient()
-        // val p_mimetype = MediaType.parse("application/json; charset=utf-8")
-        // val p_body = RequestBody.create(p_mimetype, "{}")
-        // val p_request = Request.Builder().url("http://shielded-plateau-95764.herokuapp.com/todos/").post(p_body).build()
-        // val p_response = p_client.newCall(p_request).execute()
-
-        // val todo = TodoModel("てすとさん", null, 0, false, "ほげほげ")
-        // mTodoClient!!.addTodo(todo).execute()
-
-        // val test = TodoConnect()
-        // test.execute(null)
-
         call.enqueue(object : Callback<ArrayList<TodoModel>> {
 
             override fun onResponse(call: Call<ArrayList<TodoModel>>?,
@@ -101,22 +89,8 @@ class MainActivityFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<ArrayList<TodoModel>>?, t: Throwable?) {
-
-                // Set the adapter
-                if (view is RecyclerView) {
-
-                    view.apply {
-                        setHasFixedSize(true)
-                        layoutManager = LinearLayoutManager(context)
-                        adapter = TodoRecyclerViewAdapter(
-                                arrayListOf(),
-                                mListener
-                        )
-                    }
-                }
-
+                makeToast(MyApplication.mAppContext, getString(R.string.msg_fail_get_todos))
             }
-
         })
 
         return view
