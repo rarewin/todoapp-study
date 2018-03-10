@@ -31,7 +31,11 @@ class MainActivityFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_main_list, container, false)
 
-        val host = arguments!!.getString(ARG_host)
+        if (!(view is RecyclerView)) {
+            return view
+        }
+
+            val host = arguments!!.getString(ARG_host)
         val apitoken = arguments!!.getString(ARG_apitoken)
 
         // if json_host is invalidTODO_APP_SETTING
@@ -64,8 +68,18 @@ class MainActivityFragment : Fragment() {
                 .build()
 
         val todoClient = retrofit.create(TodoClient::class.java)
-
         val call = todoClient!!.getTodos()
+
+        // unless empty list registered first,
+        // the error "E/RecyclerView﹕ No adapter attached; skipping layout" will be generated
+        view.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = TodoRecyclerViewAdapter(
+                    emptyList(),
+                    mListener
+            )
+        }
 
         call.enqueue(object : Callback<ArrayList<TodoModel>> {
 
@@ -75,21 +89,14 @@ class MainActivityFragment : Fragment() {
                 val todoResponse = response!!.body()
 
                 // Set the adapter
-                if (view is RecyclerView) {
+                view.adapter = TodoRecyclerViewAdapter(
+                        todoResponse!!, mListener
+                )
 
-                    view.apply {
-                        setHasFixedSize(true)
-                        layoutManager = LinearLayoutManager(context)
-                        adapter = TodoRecyclerViewAdapter(
-                                todoResponse!!,
-                                mListener
-                        )
-                    }
-                }
             }
 
             override fun onFailure(call: Call<ArrayList<TodoModel>>?, t: Throwable?) {
-                makeToast(MyApplication.mAppContext, getString(R.string.msg_fail_get_todos))
+                makeToast(context, getString(R.string.msg_fail_get_todos))
             }
         })
 

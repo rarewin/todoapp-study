@@ -93,6 +93,8 @@ class MainActivity : AppCompatActivity() {
                     mTodoAppSetting!!.setApiToken(apitoken ?: "")
 
                     makeToast(this, getString(R.string.setting_changed))
+
+                    updateList()
                 }
             }
             REQUEST_NEWTODO -> {
@@ -104,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
                 // if json_host is invalidTODO_APP_SETTING
                 if (!URLUtil.isValidUrl(host)) {
-                    makeToast(MyApplication.mAppContext, getString(R.string.msg_invalid_url))
+                    makeToast(this, getString(R.string.msg_invalid_url))
                 }
 
                 val client = OkHttpClient.Builder()
@@ -135,6 +137,7 @@ class MainActivity : AppCompatActivity() {
                 todoClient.addTodo(todo).enqueue(object: Callback<TodoModel> {
                     override fun onResponse(call: Call<TodoModel>?, response: Response<TodoModel>?) {
                         makeToast(MyApplication.mAppContext, getString(R.string.msg_new_todo_registerd))
+                        updateList()
                     }
                     override fun onFailure(call: Call<TodoModel>?, t: Throwable?) {
                         makeToast(MyApplication.mAppContext, getString(R.string.msg_fail_new_todo_registered))
@@ -142,5 +145,20 @@ class MainActivity : AppCompatActivity() {
                 })
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateList()
+    }
+
+    private fun updateList() {
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.container_main,
+                        MainActivityFragment.newInstance(
+                                mTodoAppSetting!!.getServerUri(),
+                                mTodoAppSetting!!.getApiToken()),
+                        "MAIN")
+                .commit()
     }
 }
