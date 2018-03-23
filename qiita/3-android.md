@@ -23,10 +23,13 @@ Androidのアプリを書いてみようかと思うのですが、それなり�
 - Recycler Viewを使って登録されている一覧を表示できるようにする
 - 新規でTODOを登録できるようにする
 
-なお、今回の記事については多分に [一番やさしいAndroidアプリ開発入門２][] を参考にさせてもらいました。
+謝辞的な感じで、今回の記事については多分に [一番やさしいAndroidアプリ開発入門２][] を参考にさせてもらいました。
 結構わかった気になれる内容なので、ちょくちょく9割引きくらいになるのでそのタイミング購入すると良いかもしれません。
-あ、ワタクシ別に回し者ではございません。
-あと、大阪在住のワタクシでも、講師のノリは若干ツラいので、サンプルで駄目そうなら止めた方が良いと思います(ぉ。
+あ、ワタクシ別に回し者というわけではございません。
+~~あと、大阪在住のワタクシでも、講師のノリは若干ツラいので、サンプルで駄目そうなら止めた方が良いと思います(ぉ。~~
+
+今回使用したコードは、 [GitHub](https://github.com/rarewin/todoapp-study/releases/tag/cp-qiita-part3) にアップしてますので、興味あればどうぞ。
+
 
 ### 過去の記事
 
@@ -58,7 +61,7 @@ Required by:
 ```
 
 どうやら、以前からの設定ファイルが悪さをしていたようです。
-.AndroidStudioPreview3.1ディレクトリを削除して、設定を遣り直したらビルドできるプロジェクトができました。
+`~/.AndroidStudioPreview3.1` ディレクトリを削除して、設定を遣り直したらビルドできるプロジェクトができました。
 
 ## ToDoアプリのサーバーの設定
 
@@ -134,7 +137,7 @@ class TodoAppSetting(context: Context) {
 で、今回は上で「フラグメントを使用する」としてアクティビティをつくってしまったので、以下のように手動で色々と追加してます。
 実際にRecyclerViewを使ったリストを作成する際には、EmptyActivityを作って右クリックのメニューから "New" → "Fragment" → "Fragment (List)" とした方がかしこいようです。
 __上で紹介した [一番やさしいAndroidアプリ開発入門２][] でもそうやってます。__
-~~なんでやらなかったって? 身についてなかったからですYO!! orz ~~
+~~なんでやらなかったって? 身についてなかったからですYO!! orz~~
 
 まず、content_main.xmlを以下のような感じにしました。FrameLayoutにして、後々フラグメントを入れかえられるようにしてます。
 
@@ -232,12 +235,22 @@ CardViewをつくって、その中にLinearLayoutを使いつつアイコンと
 </LinearLayout>
 ```
 
-## Retrofit+OkHttp+gsonの組み合わせでAdapterをつくる
+このフラグメントを表示するため、以下のようなコードをMainActivityに仕込んでいます。
+
+``` kotlin
+        supportFragmentManager.beginTransaction()
+                .add(R.id.container_main,
+                        MainActivityFragment.newInstance(
+                                mTodoAppSetting!!.getServerUri(),
+                                mTodoAppSetting!!.getApiToken()),
+                        "MAIN")
+                .commit()
+```
+
+### Retrofit+OkHttp+gsonの組み合わせでAdapterをつくる
 
 さて、問題はこの後のAdapterです。
 が、その前にそもそもRESTでアクセスするかなんですが、なんのひねりもなく[Retrofit][]と[OkHttp][]と[gson][]をつかいます。
-
-### モデルをつくる
 
 まずはgsonで使うためにTODOのモデルをつくります。
 [前回](https://qiita.com/rarewin/items/aece9d05aab3964c0300) 作成したjsonが
@@ -264,7 +277,7 @@ CardViewをつくって、その中にLinearLayoutを使いつつアイコンと
 といった感じなので、モデルとしては以下のようになりました。
 なお、importとかpackageは省略してます。data class使えるKotlinは、こういうのほんと楽。素敵。
 
-なお、ActivityやFragment間で受け渡しできるようにSerializableを継承しました。
+あと、ActivityやFragment間で受け渡しできるようにSerializableを継承しております。
 
 ```kotlin:app/src/main/java/org/tirasweel/todoapp/todo/TodoModel.kt
 data class TodoModel(val text: String,
@@ -406,8 +419,74 @@ class TodoRecyclerViewAdapter(
     }
 ```
 
+上記のコードで、以下のような表示ができました。
+なお、まだ項目をつついても何も起こりません……。
+
+![list.png](https://qiita-image-store.s3.amazonaws.com/0/122416/e9e9a28c-7363-549f-b2bc-2604bef8e8e3.png)
 
 
+## 新規追加もできるようにする
+
+一覧の取得ができるようになったので、今度はPOSTです。
+入力画面だけ作ってしまえば簡単……です。
+みなさまにおかれましては、決して、決して enqueue() をコールしわすれて頭を抱えないようにお気をつけください…………(1敗)。
+
+```kotlin:app/src/main/java/org/tirasweel/todoapp/MainActivity.kt
+                val client = OkHttpClient.Builder()
+                        .addInterceptor(Interceptor { chain ->
+
+                            val orig = chain.request()
+                            val request = orig.newBuilder()
+                                    .header("Authorization", "Token " + apitoken)
+                                    .method(orig.method(), orig.body())
+                                    .build()
+
+                            chain.proceed(request)
+
+                        }).build()
+
+                val gson = GsonBuilder()
+                        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                        .create()
+
+                val retrofit = Retrofit.Builder()
+                        .baseUrl(host)
+                        .addConverterFactory(GsonConverterFactory.create(gson))
+                        .client(client)
+                        .build()
+
+                val todoClient = retrofit.create(TodoClient::class.java)
+
+                todoClient.addTodo(todo).enqueue(object: Callback<TodoModel> {
+                    override fun onResponse(call: Call<TodoModel>?, response: Response<TodoModel>?) {
+                        makeToast(MyApplication.mAppContext, getString(R.string.msg_new_todo_registerd))
+                        updateList()
+                    }
+                    override fun onFailure(call: Call<TodoModel>?, t: Throwable?) {
+                        makeToast(MyApplication.mAppContext, getString(R.string.msg_fail_new_todo_registered))
+                    }
+                })
+```
+
+長くなってきたのでレイアウトについては省略しますが、画面的には以下のような感じになっております。
+
+![edit.png](https://qiita-image-store.s3.amazonaws.com/0/122416/5bc4a276-3291-4f7d-216c-65df03a71015.png)
+
+## 今後の課題など
+
+まず、今回はGET/POSTしかやっていないので、今後はPUTも使って編集できるようにしたいです。
+元にしたDjangoのコードが、PUT作ってないだけでなくTODO項目にID付けてないので、Django側とAndroid側と両方に結構な変更が必要そう。
+あと、Vueの画面も直さないといけませんか。よくばりすぎ……か。
+
+次に、一覧の更新方法について検討したいと思ってます。
+要は、引っぱって更新するやつです。
+SwipeRefreshLayoutがミソらしいですが、今回はそこまで辿りつけませんでした。
+
+そして、Qiita記事について、もうちょっと小出し小出しにできるようにしたいところです。
+ここまでの記事についても、いささか欲張りすぎですな……。
+
+あと、そもそも、コードをもっといい感じにしたいですね。
+今回のコードも、Retrofit回りのコードがGET/POSTで「DRY規則なにそれ?」的になってるので、なおしたいっす。
 
 ## 参考にさせていただいたもの
 
