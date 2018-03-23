@@ -23,6 +23,11 @@ Androidのアプリを書いてみようかと思うのですが、それなり�
 - Recycler Viewを使って登録されている一覧を表示できるようにする
 - 新規でTODOを登録できるようにする
 
+なお、今回の記事については多分に [一番やさしいAndroidアプリ開発入門２][] を参考にさせてもらいました。
+結構わかった気になれる内容なので、ちょくちょく9割引きくらいになるのでそのタイミング購入すると良いかもしれません。
+あ、ワタクシ別に回し者ではございません。
+あと、大阪在住のワタクシでも、講師のノリは若干ツラいので、サンプルで駄目そうなら止めた方が良いと思います(ぉ。
+
 ### 過去の記事
 
 - [Vue.js + Django REST Framework + Android でTODOアプリを書いてみるテスト Part 1/?](https://qiita.com/rarewin/items/c6a70689844eafe8c3a1)
@@ -118,14 +123,20 @@ class TodoAppSetting(context: Context) {
 ```
 
 このクラスを用いて無事に設定値を保存し、次回以降の起動時でも設定値を読み込むことができるようになりました。
-もうちょっとすっきり書けそうな気もしますが、一旦こんな感じで。
+もうちょっとすっきり書けそうな気もしますが、ひとまずやりたい事は最低限できたので、一旦こんな感じで。
 
 ## RecyclerView を使ってTODOの一覧を表示する
 
 ### レイアウトをいじる
 
-で、ようやくここまで来ました。長かった。
-まず、content_main.xmlを以下のような感じにしました。
+で、ようやくここまで来ました。長かった……。
+
+で、今回は上で「フラグメントを使用する」としてアクティビティをつくってしまったので、以下のように手動で色々と追加してます。
+実際にRecyclerViewを使ったリストを作成する際には、EmptyActivityを作って右クリックのメニューから "New" → "Fragment" → "Fragment (List)" とした方がかしこいようです。
+__上で紹介した [一番やさしいAndroidアプリ開発入門２][] でもそうやってます。__
+~~なんでやらなかったって? 身についてなかったからですYO!! orz ~~
+
+まず、content_main.xmlを以下のような感じにしました。FrameLayoutにして、後々フラグメントを入れかえられるようにしてます。
 
 ```xml:app/src/main/res/layout/content_main.xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -150,55 +161,144 @@ class TodoAppSetting(context: Context) {
 </android.support.constraint.ConstraintLayout>
 ```
 
-まず、一覧表示用のフラグメントにをさわりますが、もちろんHello Worldは消しておくとして、Constraint Layoutの下に問題のRecyclerViewを追加しました。
-app:layout_constraintほげほげを設定しておくのを忘れずに……(1敗)。
+このFrameLayoutに入れるフラグメントですが、まずはリスト表示するためのfragment_menu_list.xmlというファイルを新規で作成しました。
+内容は以下のような感じ。ここでようやくRecyclerViewが登場してます。
+`tools:listitem="@layout/fragment_main"`がミソな気がします。
 
-- fragment_master_list.xml
-  - RecyclerView
-	- tools:listitem="@layout/fragment_master"
+```xml:app/src/main/res/layout/fragment_main_list.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list"
+    android:name="org.tirasweel.todoapp.MainActivityFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    app:layoutManager="LinearLayoutManager"
+    tools:context=".MainActivityFragment"
+    tools:listitem="@layout/fragment_main" />
+```
 
-- fragment_master.xml
-  - CardView
+そして、その問題のfragment_main.xmlは以下のようにしました。
+CardViewをつくって、その中にLinearLayoutを使いつつアイコンとしてImageViewやら、TODOの内容や期日表示のためのTextViewを用意しました。
 
+```xml:app/src/main/res/layout/fragment_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-content_main.xmlの `fragment` を `Constraintlayout` に変換する。
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-```kotlin
-package org.tirasweel.todoapp
+            <ImageView
+                android:id="@+id/image_todo_icon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_media_stop_light" />
 
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/text_todo_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-import org.tirasweel.todoapp.MainActivityFragment.OnListFragmentInteractionListener
-import org.tirasweel.todoapp.dummy.DummyContent.DummyItem
+                <TextView
+                    android:id="@+id/text_todo_deadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-import kotlinx.android.synthetic.main.fragment_main.view.*
+            </LinearLayout>
+        </LinearLayout>
 
-/**
- * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
- */
+    </android.support.v7.widget.CardView>
+</LinearLayout>
+```
+
+## Retrofit+OkHttp+gsonの組み合わせでAdapterをつくる
+
+さて、問題はこの後のAdapterです。
+が、その前にそもそもRESTでアクセスするかなんですが、なんのひねりもなく[Retrofit][]と[OkHttp][]と[gson][]をつかいます。
+
+### モデルをつくる
+
+まずはgsonで使うためにTODOのモデルをつくります。
+[前回](https://qiita.com/rarewin/items/aece9d05aab3964c0300) 作成したjsonが
+
+```json
+[
+    {
+        "text": "てすと",
+        "deadline": null,
+        "priority": null,
+        "done": false,
+        "memo": ""
+    },
+    {
+        "text": "あいうえお",
+        "deadline": null,
+        "priority": null,
+        "done": false,
+        "memo": ""
+    }
+}
+```
+
+といった感じなので、モデルとしては以下のようになりました。
+なお、importとかpackageは省略してます。data class使えるKotlinは、こういうのほんと楽。素敵。
+
+なお、ActivityやFragment間で受け渡しできるようにSerializableを継承しました。
+
+```kotlin:app/src/main/java/org/tirasweel/todoapp/todo/TodoModel.kt
+data class TodoModel(val text: String,
+                     val deadline: String?,
+                     val priority: Int?,
+                     val done: Boolean,
+                     val memo: String?): Serializable
+```
+
+次にRetrofitのAPIは以下のようにinterfaceで定義。
+ひとまず、今回は一覧で使うためのGETと、新規追加のPOSTを用意。
+例によって例の如く、packageやimportは省略しております。
+こちらは特にミソもないです。あるとしたら、GETの方は一覧になるのでArrayListになってる事くらいでしょうか。
+
+```kotlin:app/src/main/java/org/tirasweel/todoapp/todo/TodoClient.kt
+interface TodoClient {
+    @GET("/todos/")
+    fun getTodos(): Call<ArrayList<TodoModel>>
+
+    @POST("/todos/")
+    fun addTodo(@Body todo: TodoModel): Call<TodoModel>
+}
+```
+
+次にAdapterです。
+以下のようなコードになりました。
+このあたりは、RecyclerViewのAdapterとしては何の変哲もないでしょうか。
+ひとまず今回はTODOの内容(text_todo_text)、期日(text_todo_deadline)、適当なアイコン(image_todo_icon)にTodoModelの値を入れています。
+
+```kotlin:app/src/main/java/org/tirasweel/todoapp/todo/TodoRecyclerViewAdapter.kt
 class TodoRecyclerViewAdapter(
-        private val mValues: List<DummyItem>,
+        private val mValues: List<TodoModel>,
         private val mListener: OnListFragmentInteractionListener?)
     : RecyclerView.Adapter<TodoRecyclerViewAdapter.ViewHolder>() {
-
-    private val mOnClickListener: View.OnClickListener
-
-    init {
-        mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyItem
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -207,39 +307,123 @@ class TodoRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = mValues[position]
-        holder.mIdView.text = item.id
-        holder.mContentView.text = item.content
 
-        with(holder.mView) {
-            tag = item
-            setOnClickListener(mOnClickListener)
-        }
+        holder.mTodoText.text = mValues[position].text
+        holder.mTodoDeadline.text = mValues[position].deadline
+
+        holder.mTodoIcon.setColorFilter(
+                ContextCompat.getColor(
+                        MyApplication.mAppContext,
+                        when (mValues[position].priority) {
+                            1 -> R.color.colorPri1
+                            2 -> R.color.colorPri2
+                            3 -> R.color.colorPri3
+                            4 -> R.color.colorPri4
+                            5 -> R.color.colorPri5
+                            else -> R.color.colorPriNone
+                        }))
     }
 
     override fun getItemCount(): Int = mValues.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mIdView: TextView = mView.item_number
-        val mContentView: TextView = mView.content
-
-        override fun toString(): String {
-            return super.toString() + " '" + mContentView.text + "'"
-        }
+        var mTodoText = mView.text_todo_text
+        var mTodoDeadline = mView.text_todo_deadline
+        var mTodoIcon = mView.image_todo_icon
     }
 }
 ```
+
+さて、問題となるのは、今回ヘッダにTokenを含めないといけないことです。
+結論から言うと、OkHttpClientをInterceptorを介してヘッダが付くように自分で作ってあげ、それをRetrofitに渡してあげればOKでした。
+参考にさせていただいたサイト……は失念シテシマイマシタ……。
+
+ひとまず、GETのコードはフラグメントの `onCreateView()` に、以下のように入れました。
+ホスト名とか、APIのトークンについては、前述したTodoAppSettingクラスで取得した値をアクティビティからもらっています。
+
+```kotlin:app/src/main/java/org/tirasweel/todoapp/MainActivityFragment.kt
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+
+        val view = inflater.inflate(R.layout.fragment_main_list, container, false)
+
+        if (!(view is RecyclerView)) {
+            return view
+        }
+
+        val host = arguments!!.getString(ARG_host)
+        val apitoken = arguments!!.getString(ARG_apitoken)
+
+        val client = OkHttpClient.Builder()
+                .addInterceptor(Interceptor { chain ->
+                    val orig = chain.request()
+                    val request = orig.newBuilder()
+                            .header("Authorization", "Token " + apitoken)
+                            .method(orig.method(), orig.body())
+                            .build()
+                    chain.proceed(request)
+                }).build()
+
+        val gson = GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create()
+
+        val retrofit = Retrofit.Builder()
+                .baseUrl(host)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(client)
+                .build()
+
+        val todoClient = retrofit.create(TodoClient::class.java)
+        val call = todoClient!!.getTodos()
+
+        view.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = TodoRecyclerViewAdapter(
+                    emptyList(),
+                    mListener
+            )
+        }
+
+        call.enqueue(object : Callback<ArrayList<TodoModel>> {
+
+            override fun onResponse(call: Call<ArrayList<TodoModel>>?,
+                                    response: Response<ArrayList<TodoModel>>?) {
+                val todoResponse = response!!.body()
+                // Set the adapter
+                view.adapter = TodoRecyclerViewAdapter(
+                        todoResponse!!, mListener
+                )
+            }
+            override fun onFailure(call: Call<ArrayList<TodoModel>>?, t: Throwable?) {
+                makeToast(context, getString(R.string.msg_fail_get_todos))
+            }
+        })
+
+        return view
+    }
+```
+
+
 
 
 ## 参考にさせていただいたもの
 
 - [キー値セットを保存する][]
 - [URLUtil][]
+- [リストとカードの作成][]
+- [Retrofit][]
+- [OkHttp][]
+- [gson][]
 
-- [ListsAndCards][]
-
+[DjangoRestFramework]:http://www.django-rest-framework.org/
+[一番やさしいAndroidアプリ開発入門２]:https://www.udemy.com/androidkotlin2/learn/v4/overview
 [キー値セットを保存する]:https://developer.android.com/training/basics/data-storage/shared-preferences.html?hl=ja
 [URLUtil]:https://developer.android.com/reference/android/webkit/URLUtil.html
-[ListsAndCards]:https://developer.android.com/training/material/lists-cards.html
-
 [リストとカードの作成]:https://developer.android.com/training/material/lists-cards.html?hl=ja
+[Retrofit]:http://square.github.io/retrofit/
+[OkHttp]:http://square.github.io/okhttp/
+[gson]:https://github.com/google/gson
+

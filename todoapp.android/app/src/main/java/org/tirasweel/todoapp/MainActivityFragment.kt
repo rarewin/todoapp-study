@@ -35,10 +35,10 @@ class MainActivityFragment : Fragment() {
             return view
         }
 
-            val host = arguments!!.getString(ARG_host)
+        val host = arguments!!.getString(ARG_host)
         val apitoken = arguments!!.getString(ARG_apitoken)
 
-        // if json_host is invalidTODO_APP_SETTING
+        // if json_host is invalid
         if (!URLUtil.isValidUrl(host)) {
             makeToast(MyApplication.mAppContext, getString(R.string.msg_invalid_url))
             return view
