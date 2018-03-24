@@ -28,7 +28,7 @@ Androidのアプリを書いてみようかと思うのですが、それなり�
 あ、ワタクシ別に回し者というわけではございません。
 ~~あと、大阪在住のワタクシでも、講師のノリは若干ツラいので、サンプルで駄目そうなら止めた方が良いと思います(ぉ。~~
 
-今回使用したコードは、 [GitHub](https://github.com/rarewin/todoapp-study/releases/tag/cp-qiita-part3) にアップしてますので、興味あればどうぞ。
+今回使用したコードは、 [GitHubにタグつけて](https://github.com/rarewin/todoapp-study/releases/tag/cp-qiita-part3) にアップしてますので、興味あればどうぞ。
 
 
 ### 過去の記事

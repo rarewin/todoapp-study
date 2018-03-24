@@ -3,13 +3,13 @@ package org.tirasweel.todoapp
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.URLUtil
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.fragment_main_list.*
 import okhttp3.*
 import org.tirasweel.todoapp.todo.TodoClient
 
@@ -29,11 +29,46 @@ class MainActivityFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view = inflater.inflate(R.layout.fragment_main_list, container, false)
+        return inflater.inflate(R.layout.fragment_main_list, container, false)
 
-        if (!(view is RecyclerView)) {
-            return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        super.onViewCreated(view, savedInstanceState)
+
+        updateTodoList()
+
+        swipe_refresh?.setOnRefreshListener {
+            updateTodoList()
         }
+
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
+    }
+
+    interface OnListFragmentInteractionListener {
+    }
+
+    companion object {
+
+        private val ARG_host = IntentKey.TODO_APP_SETTING_HOST.name
+        private val ARG_apitoken = IntentKey.TODO_APP_SETTING_API_TOKEN.name
+
+        @JvmStatic
+        fun newInstance(host: String, apitoken: String) =
+                MainActivityFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_host, host)
+                        putString(ARG_apitoken, apitoken)
+                    }
+                }
+    }
+
+    private fun updateTodoList() {
 
         val host = arguments!!.getString(ARG_host)
         val apitoken = arguments!!.getString(ARG_apitoken)
@@ -41,7 +76,7 @@ class MainActivityFragment : Fragment() {
         // if json_host is invalid
         if (!URLUtil.isValidUrl(host)) {
             makeToast(MyApplication.mAppContext, getString(R.string.msg_invalid_url))
-            return view
+            return
         }
 
         val client = OkHttpClient.Builder()
@@ -72,7 +107,7 @@ class MainActivityFragment : Fragment() {
 
         // unless empty list registered first,
         // the error "E/RecyclerView﹕ No adapter attached; skipping layout" will be generated
-        view.apply {
+        todo_list?.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = TodoRecyclerViewAdapter(
@@ -89,40 +124,18 @@ class MainActivityFragment : Fragment() {
                 val todoResponse = response!!.body()
 
                 // Set the adapter
-                view.adapter = TodoRecyclerViewAdapter(
+                todo_list?.adapter = TodoRecyclerViewAdapter(
                         todoResponse!!, mListener
                 )
-
+                swipe_refresh?.isRefreshing = false
             }
 
             override fun onFailure(call: Call<ArrayList<TodoModel>>?, t: Throwable?) {
                 makeToast(context, getString(R.string.msg_fail_get_todos))
+                swipe_refresh?.isRefreshing = false
             }
         })
 
-        return view
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-
-    interface OnListFragmentInteractionListener {
-    }
-
-    companion object {
-
-        private val ARG_host = IntentKey.TODO_APP_SETTING_HOST.name
-        private val ARG_apitoken = IntentKey.TODO_APP_SETTING_API_TOKEN.name
-
-        @JvmStatic
-        fun newInstance(host: String, apitoken: String) =
-                MainActivityFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_host, host)
-                        putString(ARG_apitoken, apitoken)
-                    }
-                }
-    }
 }
